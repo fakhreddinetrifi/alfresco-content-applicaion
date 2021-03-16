@@ -1,0 +1,28 @@
+<aca-page-layout>
+  <aca-page-layout-header>
+    <adf-breadcrumb root="Advanced Search"> </adf-breadcrumb>
+  </aca-page-layout-header>
+
+  <aca-page-layout-content>
+    <div class="main-content">
+      <mat-tab-group dynamicHeight mat-stretch-tabs class="example-stretched-tabs">
+        <mat-tab label="Simple Search">
+          <div class="simple-search">
+            <aca-search-input></aca-search-input>
+          </div>
+        </mat-tab>
+        <mat-tab label="Advanced Search">
+          <adf-search-filter #settings [showContextFacets]=true></adf-search-filter>
+        </mat-tab>
+      </mat-tab-group>
+<!--      <mat-tab-group>-->
+<!--        <mat-tab label="Simple Search">-->
+<!--          <ng-template matTabContent>-->
+<!--            <aca-search-input></aca-search-input>-->
+<!--          </ng-template>-->
+<!--        </mat-tab>-->
+<!--        <mat-tab label="Advanced Search"> Content 2 </mat-tab>-->
+<!--      </mat-tab-group>-->
+    </div>
+  </aca-page-layout-content>
+</aca-page-layout>
