@@ -36,7 +36,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-metadata-tab',
   template: `
-    <adf-content-metadata-card [readOnly]="!canUpdateNode" [preset]="'custom'" [node]="node" [displayAspect]="displayAspect$ | async">
+    <adf-content-metadata-card [readOnly]="false" [preset]="'custom'" [node]="node" [displayAspect]="true">
     </adf-content-metadata-card>
   `,
   encapsulation: ViewEncapsulation.None,
@@ -73,6 +73,7 @@ export class MetadataTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log(this.node.properties)
     this.contentMetadataService.error.pipe(takeUntil(this.onDestroy$)).subscribe((err: { message: string }) => {
       this.notificationService.showError(err.message);
     });

@@ -67,7 +67,7 @@ export class SearchLibrariesResultsComponent extends PageComponent implements On
 
   ngOnInit() {
     super.ngOnInit();
-
+    console.log();
     this.columns = this.extensions.documentListPresets.searchLibraries || [];
 
     this.subscriptions.push(

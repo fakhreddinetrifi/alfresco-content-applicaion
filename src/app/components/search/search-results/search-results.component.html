@@ -3,7 +3,7 @@
     <adf-breadcrumb root="APP.BROWSE.SEARCH.TITLE"> </adf-breadcrumb>
     <adf-toolbar class="adf-toolbar--inline">
       <ng-container *ngFor="let entry of actions; trackBy: trackByActionId">
-        <aca-toolbar-action [actionRef]="entry"></aca-toolbar-action>
+<aca-toolbar-action [actionRef]="entry"></aca-toolbar-action>
       </ng-container>
     </adf-toolbar>
   </aca-page-layout-header>
@@ -13,10 +13,12 @@
       <div class="adf-search-results">
         <adf-search-filter
           #searchFilter
+          (click)="onclick()"
           [ngClass]="{
             'adf-search-filter--hidden':
-              hideSearchFilter() || !(showFacetFilter$ | async)
+      !(showFacetFilter$ | async)||onclick()
           }"
+
         ></adf-search-filter>
         <div class="adf-search-results__content">
           <mat-progress-bar
@@ -35,8 +37,8 @@
                 *ngIf="totalResults !== 1"
               >
                 {{
-                  'APP.BROWSE.SEARCH.FOUND_RESULTS'
-                    | translate: { number: totalResults }
+                'APP.BROWSE.SEARCH.FOUND_RESULTS'
+                  | translate: { number: totalResults }
                 }}
               </div>
               <div
@@ -44,8 +46,8 @@
                 *ngIf="totalResults === 1"
               >
                 {{
-                  'APP.BROWSE.SEARCH.FOUND_ONE_RESULT'
-                    | translate: { number: totalResults }
+                'APP.BROWSE.SEARCH.FOUND_ONE_RESULT'
+                  | translate: { number: totalResults }
                 }}
               </div>
 
@@ -60,7 +62,108 @@
               class="content__side--right"
             ></adf-search-sorting-picker>
           </div>
+          <adf-document-list
+            #documentList
+            acaDocumentList
+            acaContextActions
+            [display]="documentDisplayMode$ | async"
+            selectionMode="multiple"
+            [sorting]="['modifiedAt', 'desc']"
+            [imageResolver]="imageResolver"
+            [node]="data"
+            sortingMode="client"
+            (node-dblclick)="preview($event.detail?.node)"
+            (name-click)="preview($event.detail?.node)"
+            (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
+            [hidden]="count===0"
+            >
+            <div>
+            <data-columns>
+              <data-column key="$thumbnail" type="image"></data-column>
+              <data-column
+                title="Relevance"
+                key="search.score"
+                sortable="true">
+              </data-column>
+              <data-column
+                title="FileName"
+                key="name"
+                sortable="true"
+                class="adf-grow-cell">
+              </data-column>
+                            <data-column
+                              title="Title"
+                              key="properties.cm:title"
+                              sortable="true"
+                              class="desktop-only">
+                            </data-column>
+              <data-column
+                title="Modified Date"
+                key="modifiedAt"
+                type="date"
+                format="dd.MM.yyyy HH:mm "
+                sortable="true"
+                class="adf-ellipsis-cell">
+              </data-column>
+              <data-column
+                title="Modifier"
+                key="modifiedByUser.displayName"
+                type="text"
+                format="medium"
+                sortable="true"
+                class="adf-ellipsis-cell">
+              </data-column>
+              <data-column
+                title="Created By"
+                key="createdByUser.displayName"
+                sortable="true"
+                class="desktop-only">
+              </data-column>
+              <data-column
+                title="Created Day"
+                key="createdAt"
+                type="date"
+                format="dd.MM.yyyy HH:mm "
+                sortable="true"
+                class="desktop-only">
+              </data-column>
+              <data-column
+                title="Size"
+                key="content.sizeInBytes"
+                type="fileSize"
+                format="medium"
+                sortable="true"
+                class="adf-no-grow-cell adf-ellipsis-cell">
+              </data-column>
+              <data-column
+                title="File Type"
+                key="content.mimeTypeName"
+                type="text"
+                sortable="true"
+                class="adf-grow-cell">
+              </data-column>
 
+              <data-column
+                title="Location"
+                key="path.elements.4.name"
+                type="text"
+                format="/"
+                sortable="true"
+                class="adf-grow-cell">
+              </data-column>
+            </data-columns>
+            <adf-custom-empty-content-template>
+              <ng-container *ngIf="data">
+                <div class="empty-search__block">
+                  <p class="empty-search__text">
+                    {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}
+                  </p>
+                </div>
+              </ng-container>
+            </adf-custom-empty-content-template>
+            </div>
+          </adf-document-list>
+<!--          Toggle-->
           <adf-document-list
             #documentList
             acaDocumentList
@@ -72,43 +175,45 @@
             [imageResolver]="imageResolver"
             [node]="data"
             (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
+            [hidden]="count===1"
           >
-            <data-columns>
-              <data-column
-                [key]="'$thumbnail'"
-                [type]="'image'"
-                [sr-title]="'ADF-DOCUMENT-LIST.LAYOUT.THUMBNAIL'"
-                [sortable]="false"
-              >
-              </data-column>
-
-              <data-column key type="text">
-                <ng-template let-context>
-                  <aca-search-results-row
-                    [context]="context"
-                  ></aca-search-results-row>
-                </ng-template>
-              </data-column>
-            </data-columns>
-
-            <adf-custom-empty-content-template>
-              <ng-container *ngIf="data">
-                <div class="empty-search__block">
-                  <p class="empty-search__text">
-                    {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}
-                  </p>
-                </div>
-              </ng-container>
-            </adf-custom-empty-content-template>
+            <div>
+              <data-columns>
+                <data-column
+                  [key]="'$thumbnail'"
+                  [type]="'image'"
+                  [sr-title]="'ADF-DOCUMENT-LIST.LAYOUT.THUMBNAIL'"
+                  [sortable]="false"
+                >
+                </data-column>
+                <data-column key type="text">
+                  <ng-template let-context>
+                    <aca-search-results-row
+                      [context]="context"
+                    ></aca-search-results-row>
+                  </ng-template>
+                </data-column>
+              </data-columns>
+              <adf-custom-empty-content-template>
+                <ng-container *ngIf="data">
+                  <div class="empty-search__block">
+                    <p class="empty-search__text">
+                      {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}
+                    </p>
+                  </div>
+                </ng-container>
+              </adf-custom-empty-content-template>
+            </div>
           </adf-document-list>
-
           <adf-pagination
-            *ngIf="!documentList.isEmpty()"
+            *ngIf="documentList"
             acaPagination
             [target]="documentList"
             (change)="onPaginationChanged($event)"
           >
           </adf-pagination>
+<!--          <adf-pagination *ngIf="count===1" acaPagination  [target]="documentList"  (change)="onPaginationChanged($event)"> </adf-pagination>-->
+
         </div>
       </div>
     </div>

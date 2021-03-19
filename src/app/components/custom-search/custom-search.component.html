@@ -5,24 +5,75 @@
 
   <aca-page-layout-content>
     <div class="main-content">
-      <mat-tab-group dynamicHeight mat-stretch-tabs class="example-stretched-tabs">
-        <mat-tab label="Simple Search">
-          <div class="simple-search">
-            <aca-search-input></aca-search-input>
-          </div>
-        </mat-tab>
-        <mat-tab label="Advanced Search">
-          <adf-search-filter #settings [showContextFacets]=true></adf-search-filter>
-        </mat-tab>
-      </mat-tab-group>
-<!--      <mat-tab-group>-->
-<!--        <mat-tab label="Simple Search">-->
-<!--          <ng-template matTabContent>-->
-<!--            <aca-search-input></aca-search-input>-->
-<!--          </ng-template>-->
-<!--        </mat-tab>-->
-<!--        <mat-tab label="Advanced Search"> Content 2 </mat-tab>-->
-<!--      </mat-tab-group>-->
+
+<!--      <mat-form-field class="form-field" appearance="outline">-->
+<!--        <mat-label>Name</mat-label>-->
+<!--        <input placeholder="Ex. Alex" matInput [searchAutocomplete]="settings">-->
+<!--      </mat-form-field>-->
+
+<!--      <adf-search #search="searchAutocomplete">-->
+<!--        <ng-template let-result>-->
+<!--          <ul>-->
+<!--            <li *ngFor="let item of result?.list?.entries" (click)="getNode(item?.entry)">{{ item?.entry.name }}</li>-->
+<!--          </ul>-->
+<!--        </ng-template>-->
+<!--      </adf-search>-->
+
+
+      <!--      <adf-content-metadata-card-->
+<!--        [displayEmpty]="false"-->
+<!--        [toggleDisplayProperties]="displayDefaultProperties"-->
+<!--        [preset]="'*'"-->
+<!--        [node]="node">-->
+<!--      </adf-content-metadata-card>-->
+
+
+<!--      <adf-content-metadata-card-->
+<!--        [displayEmpty]="false"-->
+<!--        [preset]="'*'"-->
+<!--        [node]="node">-->
+<!--      </adf-content-metadata-card>-->
+
+      <form class="simple-search" [formGroup]="contractForm" (ngSubmit)="onSearchSubmit()">
+<!--        <h2 style="margin-bottom: 25px;">Type Contract</h2>-->
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Name</mat-label>
+          <input placeholder="Ex. MyBank" matInput name="name" formControlName="name">
+        </mat-form-field>
+
+<!--        <mat-form-field class="form-field" appearance="outline">-->
+<!--          <mat-label>Contract number</mat-label>-->
+<!--          <input type="number" placeholder="Ex. 123" matInput name="contractNumber" formControlName="contractNumber">-->
+<!--        </mat-form-field>-->
+
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Title</mat-label>
+          <input matInput placeholder="Ex. title" name="contractType" formControlName="contractType">
+
+        </mat-form-field>
+
+<!--        <mat-form-field class="form-field" appearance="outline">-->
+<!--          <mat-label>Contract date</mat-label>-->
+<!--          <input matInput placeholder="Ex. MM/DD/YYYY" [matDatepicker]="picker" name="contractDate" formControlName="contractDate">-->
+<!--          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>-->
+<!--          <mat-datepicker #picker></mat-datepicker>-->
+
+<!--        </mat-form-field>-->
+
+<!--        <mat-form-field class="form-field" appearance="outline">-->
+<!--          <mat-label>Contract value</mat-label>-->
+<!--          <input type="number" placeholder="Ex. 1200" matInput placeholder="Ex. Engineering Degree" name="contractValue" formControlName="contractValue">-->
+
+<!--        </mat-form-field>-->
+
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Description</mat-label>
+          <textarea matInput placeholder="Ex. It makes me feel..." name="contractComment" formControlName="contractComment"></textarea>
+
+        </mat-form-field>
+
+        <button mat-raised-button>Submit</button>
+      </form>
     </div>
   </aca-page-layout-content>
 </aca-page-layout>

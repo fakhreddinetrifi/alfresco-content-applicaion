@@ -30,8 +30,8 @@
   "sharedLinkDateTimePickerType": "date",
   "headerColor": "#ffffff",
   "pagination": {
-    "size": 25,
-    "supportedPageSizes": [25, 50, 100]
+    "size": 5,
+    "supportedPageSizes": [5, 10, 25]
   },
   "files": {
     "excluded": [".DS_Store", "desktop.ini", "Thumbs.db", ".git"],

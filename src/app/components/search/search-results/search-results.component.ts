@@ -23,7 +23,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Pagination, MinimalNodeEntity, ResultSetPaging } from '@alfresco/js-api';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { SearchQueryBuilderService, SearchFilterComponent } from '@alfresco/adf-content-services';
@@ -34,19 +34,20 @@ import { ContentManagementService } from '../../../services/content-management.s
 import { AppConfigService, TranslationService } from '@alfresco/adf-core';
 import { Observable } from 'rxjs';
 import { AppExtensionService } from '@alfresco/aca-shared';
+import { DocumentListPresetRef } from '@alfresco/adf-extensions';
+import { ZoubliService } from 'src/app/zoubli.service';
 
 @Component({
   selector: 'aca-search-results',
   templateUrl: './search-results.component.html',
-  encapsulation: ViewEncapsulation.None,
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent extends PageComponent implements OnInit {
   @ViewChild('searchFilter', { static: true })
   searchFilter: SearchFilterComponent;
-
+  show = true;
+  parametre = [];
   showFacetFilter$: Observable<boolean>;
-
   searchedWord: string;
   queryParamName = 'q';
   data: ResultSetPaging;
@@ -54,6 +55,9 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
   hasSelectedFilters = false;
   sorting = ['name', 'asc'];
   isLoading = false;
+  columns: DocumentListPresetRef[] = [];
+  count = 0;
+  hidden = false;
 
   constructor(
     private queryBuilder: SearchQueryBuilderService,
@@ -63,6 +67,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     extensions: AppExtensionService,
     content: ContentManagementService,
     private translationService: TranslationService,
+    public _dataService: ZoubliService,
     private router: Router
   ) {
     super(store, extensions, content);
@@ -71,15 +76,14 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       skipCount: 0,
       maxItems: 25
     };
-
     this.showFacetFilter$ = store.select(showFacetFilter);
   }
-
   ngOnInit() {
     super.ngOnInit();
-
+    this.count = this._dataService.getOption();
+    // console.log(this._dataService.getOption());
+    // console.log("zoubliSearch");
     this.sorting = this.getSorting();
-
     this.subscriptions.push(
       this.queryBuilder.updated.subscribe((query) => {
         if (query) {
@@ -87,10 +91,8 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
           this.isLoading = true;
         }
       }),
-
       this.queryBuilder.executed.subscribe((data) => {
         this.queryBuilder.paging.skipCount = 0;
-
         this.onSearchResultLoaded(data);
         this.isLoading = false;
       }),
@@ -189,12 +191,15 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     this.data = nodePaging;
     this.totalResults = this.getNumberOfResults();
     this.hasSelectedFilters = this.isFiltered();
+    this.parametre = this.data.list.entries;
+    console.log(this.parametre);
   }
 
   getNumberOfResults() {
     if (this.data && this.data.list && this.data.list.pagination) {
       return this.data.list.pagination.totalItems;
     }
+
     return 0;
   }
 
@@ -217,7 +222,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
 
   private getSorting(): string[] {
     const primary = this.queryBuilder.getPrimarySorting();
-
     if (primary) {
       return [primary.key, primary.ascending ? 'asc' : 'desc'];
     }
@@ -238,5 +242,20 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
 
   hideSearchFilter() {
     return !this.totalResults && !this.hasSelectedFilters;
+  }
+
+  preview(node: MinimalNodeEntity) {
+    this.showPreview(node, { location: this.router.url });
+  }
+  onclick() {
+    this.count = this._dataService.getOption();
+    // console.log(this.count);
+  }
+  reload() {
+    if (this.count === 2) {
+      window.location.reload();
+      return true;
+    }
+    return false;
   }
 }

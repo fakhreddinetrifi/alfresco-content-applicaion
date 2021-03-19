@@ -30,4 +30,7 @@
   .adf-is-selected .adf-datatable-cell-value:not(:hover) {
     color: var(--theme-primary-color) !important;
   }
+  table {
+    width: 100%;
+  }
 }

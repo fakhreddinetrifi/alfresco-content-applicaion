@@ -26,6 +26,7 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ContentActionRef } from '@alfresco/adf-extensions';
 import { AppExtensionService } from '../../../services/app.extension.service';
+import { ZoubliService } from 'src/app/zoubli.service';
 
 export enum ToolbarButtonType {
   ICON_BUTTON = 'icon-button',
@@ -47,15 +48,49 @@ export class ToolbarButtonComponent {
 
   @Input()
   actionRef: ContentActionRef;
-
-  constructor(private extensions: AppExtensionService) {}
-
-  runAction() {
-    if (this.hasClickAction(this.actionRef)) {
-      this.extensions.runActionById(this.actionRef.actions.click);
-    }
+  count = 0;
+  constructor(private extensions: AppExtensionService, public _dataService: ZoubliService) {
+    _dataService.setOption(this.count);
+    console.log('zoubliTollbar');
   }
 
+  runAction() {
+    if (this.actionRef.actions.click === 'TOGGLE_SEARCH_FILTER') {
+      switch (this.count) {
+        case 0: {
+          if (this.hasClickAction(this.actionRef)) {
+            this.extensions.runActionById(this.actionRef.actions.click);
+            this._dataService.setOption(this.count);
+            console.log(this.count);
+          }
+          this.count++;
+          break;
+        }
+        case 1: {
+          if (this.hasClickAction(this.actionRef)) {
+            this.extensions.runActionById(this.actionRef.actions.click);
+            this._dataService.setOption(this.count);
+            console.log(this.count);
+            // this._dataService.setOption(this.count);
+          }
+          this.count++;
+          break;
+        }
+        case 2: {
+          if (this.hasClickAction(this.actionRef)) {
+            this.extensions.runActionById(this.actionRef.actions.click);
+            this.count = this.count - 2;
+            this._dataService.setOption(this.count);
+            console.log(this.count);
+            // this._dataService.setOption(this.count);
+          }
+          break;
+        }
+        default:
+          this.count = 0;
+      }
+    }
+  }
   private hasClickAction(actionRef: ContentActionRef): boolean {
     return !!(actionRef && actionRef.actions && actionRef.actions.click);
   }

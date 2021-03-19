@@ -47,7 +47,6 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
 
   @Input()
   context: any;
-
   name$ = new BehaviorSubject<string>('');
   title$ = new BehaviorSubject<string>('');
 
@@ -55,16 +54,14 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.updateValues();
-
     this.alfrescoApiService.nodeUpdated.pipe(takeUntil(this.onDestroy$)).subscribe((node) => {
       const row = this.context.row;
+      // console.log();
       if (row) {
         const { entry } = row.node;
-
         if (entry.id === node.id) {
           entry.name = node.name;
           entry.properties = Object.assign({}, node.properties);
-
           this.updateValues();
         }
       }
@@ -73,7 +70,6 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
 
   private updateValues() {
     this.node = this.context.row.node;
-
     const { name, properties } = this.node.entry;
     const title = properties ? properties['cm:title'] : '';
 
@@ -91,6 +87,7 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
 
   get description(): string {
     const { properties } = this.node.entry;
+    // console.log(this.node.entry.name);
     return properties ? properties['cm:description'] : '';
   }
 
