@@ -141,22 +141,9 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       emails: ['jeo@email.com', 'deo@email.com']
     }
   ];
-  dataSource;
-  //Fouth Attempt
-  // public exportAsExcelFile(json: any[], excelFileName: string): void {
-  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
-  //   const workbook: XLSX.WorkBook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-  //   const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  //   this.saveAsExcelFile(excelBuffer, excelFileName);
-  // }
-  // private saveAsExcelFile(buffer: any, fileName: string): void {
-  //   const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-  //   const EXCEL_EXTENSION = '.xlsx';
-  //   FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   ngOnInit() {
     super.ngOnInit();
     this.count = this._dataService.getOption();
-    // console.log(this._dataService.getOption());
     this.sorting = this.getSorting();
     this.subscriptions.push(
       this.queryBuilder.updated.subscribe((query) => {
@@ -166,7 +153,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
         }
       }),
       this.queryBuilder.executed.subscribe((data) => {
-        data.list.entries.forEach((value) => console.log(value.entry.properties));
         this.queryBuilder.paging.skipCount = 0;
         this.onSearchResultLoaded(data);
         this.isLoading = false;
@@ -183,7 +169,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
         if (Object.values(params).length !== 0) {
           this.searchedWord = params.hasOwnProperty(this.queryParamName) ? params[this.queryParamName] : null;
           query = this.formatSearchQuery(this.searchedWord);
-          console.log('-----TRACE 2-----' + query);
         } else {
           this.route.queryParams.subscribe((parametre) => {
             const name = parametre['name'];
@@ -192,18 +177,16 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
             const author = parametre['author'];
             const start = parametre['start'];
             const end = parametre['end'];
-            console.log(start)
             if (start !== undefined && end !== undefined) {
               const date1 = (new Date().getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
               const date2 = (new Date().getTime() - new Date(end).getTime()) / (1000 * 3600 * 24);
-              query = `(cm:name:"*${name}*" AND cm:title:"*${title}*" AND cm:description:"*${description}*" AND cm:author:"*${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY-${Math.round(date2)}DAY])`;
-              console.log('-----TRACE 2-----' + query);
+              query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY-${Math.round(date2)}DAY])`;
             } else {
-              query = `(cm:name:"*${name}*" AND cm:title:"*${title}*" AND cm:description:"*${description}*" AND cm:author:"*${author}*")`;
-              console.log('-----TRACE 2-----' + query);
+              query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*") OR (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*")`;
             }
           });
         }
+        console.log(query)
         if (query) {
           this.queryBuilder.userQuery = decodeURIComponent(query);
           this.queryBuilder.update();
