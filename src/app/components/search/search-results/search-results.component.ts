@@ -23,6 +23,56 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*!
+ * @license
+ * Alfresco Example Content Application
+ *
+ * Copyright (C) 2005 - 2020 Alfresco Software Limited
+ *
+ * This file is part of the Alfresco Example Content Application.
+ * If the software was purchased under a paid Alfresco license, the terms of
+ * the paid license agreement will prevail.  Otherwise, the software is
+ * provided under the following open source license terms:
+ *
+ * The Alfresco Example Content Application is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Alfresco Example Content Application is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*!
+ * @license
+ * Alfresco Example Content Application
+ *
+ * Copyright (C) 2005 - 2020 Alfresco Software Limited
+ *
+ * This file is part of the Alfresco Example Content Application.
+ * If the software was purchased under a paid Alfresco license, the terms of
+ * the paid license agreement will prevail.  Otherwise, the software is
+ * provided under the following open source license terms:
+ *
+ * The Alfresco Example Content Application is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Alfresco Example Content Application is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Pagination, MinimalNodeEntity, ResultSetPaging } from '@alfresco/js-api';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -116,6 +166,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
         }
       }),
       this.queryBuilder.executed.subscribe((data) => {
+        data.list.entries.forEach((value) => console.log(value.entry.properties));
         this.queryBuilder.paging.skipCount = 0;
         this.onSearchResultLoaded(data);
         this.isLoading = false;
@@ -128,9 +179,31 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
 
     if (this.route) {
       this.route.params.forEach((params: Params) => {
-        this.searchedWord = params.hasOwnProperty(this.queryParamName) ? params[this.queryParamName] : null;
-        const query = this.formatSearchQuery(this.searchedWord);
-
+        let query: string;
+        if (Object.values(params).length !== 0) {
+          this.searchedWord = params.hasOwnProperty(this.queryParamName) ? params[this.queryParamName] : null;
+          query = this.formatSearchQuery(this.searchedWord);
+          console.log('-----TRACE 2-----' + query);
+        } else {
+          this.route.queryParams.subscribe((parametre) => {
+            const name = parametre['name'];
+            const title = parametre['title'];
+            const description = parametre['description'];
+            const author = parametre['author'];
+            const start = parametre['start'];
+            const end = parametre['end'];
+            console.log(start)
+            if (start !== undefined && end !== undefined) {
+              const date1 = (new Date().getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
+              const date2 = (new Date().getTime() - new Date(end).getTime()) / (1000 * 3600 * 24);
+              query = `(cm:name:"*${name}*" AND cm:title:"*${title}*" AND cm:description:"*${description}*" AND cm:author:"*${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY-${Math.round(date2)}DAY])`;
+              console.log('-----TRACE 2-----' + query);
+            } else {
+              query = `(cm:name:"*${name}*" AND cm:title:"*${title}*" AND cm:description:"*${description}*" AND cm:author:"*${author}*")`;
+              console.log('-----TRACE 2-----' + query);
+            }
+          });
+        }
         if (query) {
           this.queryBuilder.userQuery = decodeURIComponent(query);
           this.queryBuilder.update();

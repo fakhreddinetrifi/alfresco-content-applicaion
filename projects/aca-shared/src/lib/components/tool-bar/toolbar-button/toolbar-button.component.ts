@@ -51,7 +51,6 @@ export class ToolbarButtonComponent {
   count = 0;
   constructor(private extensions: AppExtensionService, public _dataService: ZoubliService) {
     _dataService.setOption(this.count);
-    console.log('zoubliTollbar');
   }
 
   runAction() {

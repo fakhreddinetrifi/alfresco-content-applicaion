@@ -48,7 +48,12 @@
 
         <mat-form-field class="form-field" appearance="outline">
           <mat-label>Title</mat-label>
-          <input matInput placeholder="Ex. title" name="contractType" formControlName="contractType">
+          <input matInput placeholder="Ex. title" name="title" formControlName="title">
+
+        </mat-form-field>
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Author</mat-label>
+          <input matInput placeholder="Ex. title" name="author" formControlName="author">
 
         </mat-form-field>
 
@@ -68,10 +73,23 @@
 
         <mat-form-field class="form-field" appearance="outline">
           <mat-label>Description</mat-label>
-          <textarea matInput placeholder="Ex. It makes me feel..." name="contractComment" formControlName="contractComment"></textarea>
+          <textarea matInput placeholder="Ex. It makes me feel..." name="description" formControlName="description"></textarea>
 
         </mat-form-field>
 
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Modified Date</mat-label>
+          <mat-date-range-input
+            [formGroup]="contractForm"
+            [rangePicker]="campaignTwoPicker"
+            [comparisonStart]="contractForm.value.start"
+            [comparisonEnd]="contractForm.value.end">
+            <input matStartDate placeholder="From" formControlName="start">
+            <input matEndDate placeholder="To" formControlName="end">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
+          <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
+        </mat-form-field>
         <button mat-raised-button>Submit</button>
       </form>
     </div>
