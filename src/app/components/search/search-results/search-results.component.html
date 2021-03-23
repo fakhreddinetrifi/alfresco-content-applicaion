@@ -56,14 +56,16 @@
                   [searchFilter]="searchFilter"
                 ></adf-search-chip-list>
               </div>
+
             </div>
 
             <adf-search-sorting-picker
               class="content__side--right"
             ></adf-search-sorting-picker>
-            <button mat-raised-button color="primary"  (click)="export()"> Export as Excel</button>
+            <button mat-raised-button color="primary"  (click)="export()"> Export Result</button>
 
-        </div>
+          </div>
+
           <adf-document-list
             #documentList
             acaDocumentList
@@ -74,7 +76,6 @@
             [imageResolver]="imageResolver"
             [stickyHeader]=true
             [node]="data"
-            sortingMode="client"
             (node-dblclick)="preview($event.detail?.node)"
             (name-click)="preview($event.detail?.node)"
             (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
@@ -87,12 +88,11 @@
               <data-column
                 title="SEARCH.SORT.RELEVANCE"
                 key="search.score"
-                sortable="true">
+              >
               </data-column>
               <data-column
                 title="SEARCH.SORT.FILENAME"
                 key="name"
-                sortable="true"
                 class="adf-grow-cell">
               </data-column>
                             <data-column
@@ -106,7 +106,6 @@
                 key="modifiedAt"
                 type="date"
                 format="dd.MM.yyyy HH:mm "
-                sortable="true"
                 class="adf-ellipsis-cell">
               </data-column>
               <data-column
@@ -114,13 +113,11 @@
                 key="modifiedByUser.displayName"
                 type="text"
                 format="medium"
-                sortable="true"
                 class="adf-ellipsis-cell">
               </data-column>
               <data-column
                 title="METADATA.BASIC.CREATOR"
                 key="createdByUser.displayName"
-                sortable="true"
                 class="desktop-only">
               </data-column>
               <data-column
@@ -128,7 +125,6 @@
                 key="createdAt"
                 type="date"
                 format="dd.MM.yyyy HH:mm "
-                sortable="true"
                 class="desktop-only">
               </data-column>
               <data-column
@@ -136,14 +132,12 @@
                 key="content.sizeInBytes"
                 type="fileSize"
                 format="medium"
-                sortable="true"
                 class="adf-no-grow-cell adf-ellipsis-cell">
               </data-column>
               <data-column
                 title="SEARCH.FACET_FIELDS.FILE_TYPE"
                 key="content.mimeTypeName"
                 type="text"
-                sortable="true"
                 class="adf-grow-cell">
               </data-column>
 
@@ -152,7 +146,6 @@
                 key="path.elements.4.name"
                 type="text"
                 format="/"
-                sortable="true"
                 class="adf-grow-cell">
               </data-column>
             </data-columns>
@@ -175,7 +168,6 @@
             acaDocumentList
             acaContextActions
             [showHeader]="false"
-            [stickyHeader]="true"
             [selectionMode]="'multiple'"
             [sortingMode]="'server'"
             [sorting]="sorting"
@@ -212,12 +204,16 @@
               </adf-custom-empty-content-template>
             </div>
           </adf-document-list>
+          <button mat-stroked-button color="accent" (click)="loadAllResults()"> Load All Results</button>
+
+
           <adf-pagination
             *ngIf="documentList"
             acaPagination
             [target]="documentList"
             (change)="onPaginationChanged($event)"
           >
+
           </adf-pagination>
 <!--          <adf-pagination *ngIf="count===1" acaPagination  [target]="documentList"  (change)="onPaginationChanged($event)"> </adf-pagination>-->
 
@@ -226,6 +222,8 @@
     </div>
     <div class="sidebar" *ngIf="infoDrawerOpened$ | async">
       <aca-info-drawer [node]="selection.last"></aca-info-drawer>
+
     </div>
+
   </aca-page-layout-content>
 </aca-page-layout>

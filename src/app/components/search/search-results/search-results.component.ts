@@ -23,56 +23,6 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*!
- * @license
- * Alfresco Example Content Application
- *
- * Copyright (C) 2005 - 2020 Alfresco Software Limited
- *
- * This file is part of the Alfresco Example Content Application.
- * If the software was purchased under a paid Alfresco license, the terms of
- * the paid license agreement will prevail.  Otherwise, the software is
- * provided under the following open source license terms:
- *
- * The Alfresco Example Content Application is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The Alfresco Example Content Application is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*!
- * @license
- * Alfresco Example Content Application
- *
- * Copyright (C) 2005 - 2020 Alfresco Software Limited
- *
- * This file is part of the Alfresco Example Content Application.
- * If the software was purchased under a paid Alfresco license, the terms of
- * the paid license agreement will prevail.  Otherwise, the software is
- * provided under the following open source license terms:
- *
- * The Alfresco Example Content Application is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * The Alfresco Example Content Application is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
- */
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Pagination, MinimalNodeEntity, ResultSetPaging } from '@alfresco/js-api';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -108,7 +58,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
 
     queryBuilder.paging = {
       skipCount: 0,
-      maxItems: 25
+      maxItems: 5
     };
     this.showFacetFilter$ = store.select(showFacetFilter);
   }
@@ -127,22 +77,9 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
   columns: DocumentListPresetRef[] = [];
   count = 0;
   hidden = false;
-  EXCEL_TYPE: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  EXCEL_EXTENSION: '.xlsx';
-  displayedColumns: string[] = ['name', 'age', 'address', 'subject', 'email'];
-  context: any;
-
-  studentData = [
-    {
-      names: ['jhon', 'deo'],
-      ages: [19, 20],
-      address: ['pattan', 'baramulla'],
-      subjects: ['Eng', 'Math', 'Science'],
-      emails: ['jeo@email.com', 'deo@email.com']
-    }
-  ];
   ngOnInit() {
     super.ngOnInit();
+
     this.count = this._dataService.getOption();
     this.sorting = this.getSorting();
     this.subscriptions.push(
@@ -154,6 +91,8 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       }),
       this.queryBuilder.executed.subscribe((data) => {
         this.queryBuilder.paging.skipCount = 0;
+        // this.queryBuilder.paging.maxItems=this.data.list.pagination.totalItems;
+        // console.log(data);
         this.onSearchResultLoaded(data);
         this.isLoading = false;
       }),
@@ -177,16 +116,18 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
             const author = parametre['author'];
             const start = parametre['start'];
             const end = parametre['end'];
-            if (start !== undefined && end !== undefined) {
+            if (name === '' && title === '' && description === '' && author === '' && start === undefined && end === undefined) {
+              query = this.formatSearchQuery('*');
+            } else if (start !== undefined && end !== undefined) {
               const date1 = (new Date().getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
               const date2 = (new Date().getTime() - new Date(end).getTime()) / (1000 * 3600 * 24);
-              query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY-${Math.round(date2)}DAY])`;
+              query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY+${Math.round(date2)}DAY])`;
             } else {
               query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*") OR (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*")`;
             }
           });
         }
-        console.log(query)
+        console.log(query);
         if (query) {
           this.queryBuilder.userQuery = decodeURIComponent(query);
           this.queryBuilder.update();
@@ -271,9 +212,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     this.data = nodePaging;
     this.totalResults = this.getNumberOfResults();
     this.hasSelectedFilters = this.isFiltered();
-    this.parametre = this.data.list.entries;
   }
-
   getNumberOfResults() {
     if (this.data && this.data.list && this.data.list.pagination) {
       return this.data.list.pagination.totalItems;
@@ -298,7 +237,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     };
     this.queryBuilder.update();
   }
-
   private getSorting(): string[] {
     const primary = this.queryBuilder.getPrimarySorting();
     if (primary) {
@@ -318,11 +256,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       this.showPreview(node, { location: this.router.url });
     }
   }
-
-  hideSearchFilter() {
-    return !this.totalResults && !this.hasSelectedFilters;
-  }
-
   preview(node: MinimalNodeEntity) {
     this.showPreview(node, { location: this.router.url });
   }
@@ -338,68 +271,103 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     return false;
   }
 
-  // exportToExcel() {
-  //   console.log(this.data.list.entries);
-  //   // this.exportAsExcelFile(this.data.list.entries, 'eoubli');
-  //   // const workSheet = XLSX.utils.table_to_sheet(this.data.list.entries);
-  //   // const workBook: XLSX.WorkBook = XLSX.utils.book_new();
-  //   // XLSX.utils.book_append_sheet(workBook, workSheet, 'SheetName');
-  //   // XLSX.writeFile(workBook, 'filename.xlsx');
-  //   // Second Attempt
-  //   // const wb = XLSX.utils.book_new();
-  //   // const ws = XLSX.utils.json_to_sheet(this.data.list.entries);
-  //   // XLSX.utils.book_append_sheet(wb, ws, 'test');
-  //   // XLSX.writeFile(wb, `${'fileName'}.xlsx`);
-  //   //Third Attempt
-  // }
   export() {
     this.downloadFile();
   }
-
+  loadAllResults() {
+    this.isLoading = true;
+    this.queryBuilder.paging.maxItems = this.data.list.pagination.totalItems;
+    this.queryBuilder.execute();
+  }
   downloadFile() {
-    console.log(this.data.list.entries[0].entry);
-    // this.context = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
-    // console.log(this.context);
+    this.queryBuilder.executed.subscribe((data) => {
+      this.queryBuilder.paging.skipCount = 0;
 
-    // const csvData = this.ConvertToCSV(
-    //   this.data.list.entries.map((object) => object.entry),
-    //   ['name', 'createdAt', 'modifiedAt']
-    // );
-    // const csvData2 = this.ConvertToCSV(
-    //   this.data.list.entries.map((object) => object.entry.createdByUser),
-    //   ['displayName']
-    // );
-    // const csvData3 = this.ConvertToCSV(
-    //   this.data.list.entries.map((object) => object.entry.content),
-    //   ['mimeTypeName']
-    // );
-    // const csvData4 = this.ConvertToCSV(
-    //   // tslint:disable-next-line:prettier
-    //   this.data.list.entries.map((object) => object.entry.path),
-    //   ['name']
-    // );
-    console.log(this.data.list.entries[0].entry.content.mimeType);
+      this.onSearchResultLoaded(data);
+      this.isLoading = false;
+    });
 
-    const filet = this.data.list.entries.map((content) => content.entry.createdAt);
-    const filet2 = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
-    const filet3 = this.data.list.entries.map((object) => object.entry.name);
-    const filet4 = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
-    const filet5 = this.data.list.entries.map((object) => {
-      return object.entry.modifiedAt;
+    const FileType = this.data.list.entries.map((content) => {
+      if (content.entry.isFile === true) {
+        return content.entry.content.mimeTypeName;
+      } else {
+        return 'Folder type';
+      }
     });
-    const filet6 = this.data.list.entries.map((object) => {
-      return object.entry.modifiedByUser.displayName;
+    const Relevance = this.data.list.entries.map((content) => content.entry.search.score);
+    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt.toString().substring(0, 25));
+    const CreatedBy = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
+    const Name = this.data.list.entries.map((object) => object.entry.name);
+    const ModifiedBy = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
+    const ModifiedAt = this.data.list.entries.map((object) => {
+      return object.entry.modifiedAt.toString().substring(0, 25);
     });
-    const output = filet.map((s, i) => ({
-      CreatedAt: s,
-      CreatedBy: filet2[i],
-      Name: filet3[i],
-      ModifiedBy: filet4[i],
-      ModifiedAt: filet5[i],
-      shade5: filet6[i]
+    const Path = this.data.list.entries.map((object) => {
+      if (object.entry.path.elements[1] === undefined) {
+        return 'no location available';
+      } else if (object.entry.path.elements[2] === undefined) {
+        return object.entry.path.elements[1].name;
+      } else if (object.entry.path.elements[3] === undefined) {
+        return object.entry.path.elements[2].name;
+      } else if (object.entry.path.elements[4] === undefined) {
+        return object.entry.path.elements[3].name;
+      } else if (object.entry.path.elements[5] === undefined) {
+        return object.entry.path.elements[4].name;
+      } else return object.entry.path.elements[5].name;
+    });
+    const Size = this.data.list.entries.map((object) => {
+      let i;
+      if (object.entry.isFile === true) {
+        if (object.entry.content.sizeInBytes >= 1073741824) {
+          i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
+        } else if (object.entry.content.sizeInBytes >= 1048576) {
+          i = (object.entry.content.sizeInBytes / 1048576).toFixed(2) + ' MB';
+        } else if (object.entry.content.sizeInBytes >= 1024) {
+          i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
+        } else if (object.entry.content.sizeInBytes > 1) {
+          i = object.entry.content.sizeInBytes + ' bytes';
+        } else if (object.entry.content.sizeInBytes == 1) {
+          i = object.entry.content.sizeInBytes + ' byte';
+        } else {
+          i = '0 bytes';
+        }
+        return i;
+      } else return 'folder has no size';
+    });
+    const Title = this.data.list.entries.map((content) => {
+      // tslint:disable-next-line:prettier
+      if (content.entry.isFile === true){
+        return content.entry.properties['cm:title'];
+      } else {
+        return 'Folder type Has no Title';
+      }
+    });
+    console.log(Title);
+    const output = Name.map((s, i) => ({
+      FileName: s,
+      Relevance: Relevance[i],
+      Title: Title[i],
+      CreatedDate: CreatedAt[i],
+      Creator: CreatedBy[i],
+      Modifier: ModifiedBy[i],
+      ModifiedDate: ModifiedAt[i],
+      FileType: FileType[i],
+      Size: Size[i],
+      Location: Path[i]
     }));
     console.log(output);
-    const csvData = this.ConvertToCSV(output, ['CreatedAt', 'CreatedBy', 'Name', 'ModifiedBy', 'ModifiedAt']);
+    const csvData = this.ConvertToCSV(output, [
+      'Relevance',
+      'FileName',
+      'Title',
+      'ModifiedDate',
+      'Modifier',
+      'Creator',
+      'CreatedDate',
+      'Size',
+      'FileType',
+      'Location'
+    ]);
     const blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
     const dwldLink = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -410,7 +378,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       dwldLink.setAttribute('target', '_blank');
     }
     dwldLink.setAttribute('href', url);
-    dwldLink.setAttribute('download', 'filename' + '.csv');
+    dwldLink.setAttribute('download', 'ZoubliExport' + '.csv');
     dwldLink.style.visibility = 'hidden';
     document.body.appendChild(dwldLink);
     dwldLink.click();
@@ -439,45 +407,3 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     return str;
   }
 }
-// exportToCsv(filename: string, rows: object[]) {
-//   if (!rows || !rows.length) {
-//     return;
-//   }
-//   const usersJson: any[] = Array.of(this.data.list.entries);
-//   console.log(usersJson);
-// const separator = ',';
-// const keys = Object.keys(rows[0]);
-// // const csvContent =
-// //   keys.join(separator) +
-// //   '\n' +
-// //   rows
-// //     .map((row) => {
-// //       return keys
-// //         .map((k) => {
-// //           let cell = row[k] === null || row[k] === undefined ? '' : row[k];
-// //           cell = cell instanceof Date ? cell.toLocaleString() : cell.toString().replace(/"/g, '""');
-// //           if (cell.search(/("|,|\n)/g) >= 0) {
-// //             cell = `"${cell}"`;
-// //           }
-// //           return cell;
-// //         })
-// //         .join(separator);
-// //     })
-// //     .join('\n');
-
-// const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-// if (navigator.msSaveBlob) {
-//   // IE 10+
-//   navigator.msSaveBlob(blob, filename);
-// } else {
-//   const link = document.createElement('a');
-//   if (link.download !== undefined) {
-//     // Browsers that support HTML5 download attribute
-//     const url = URL.createObjectURL(blob);
-//     link.setAttribute('href', url);
-//     link.setAttribute('download', filename);
-//     link.style.visibility = 'hidden';
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   }
