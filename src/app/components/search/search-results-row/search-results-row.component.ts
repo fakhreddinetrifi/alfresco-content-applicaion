@@ -32,6 +32,7 @@ import { AlfrescoApiService } from '@alfresco/adf-core';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isLocked } from '@alfresco/aca-shared';
+// import {entryPointKeyFor} from "@angular/compiler-cli/src/ngtsc/routing";
 
 @Component({
   selector: 'aca-search-results-row',
@@ -86,6 +87,7 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
   }
 
   get description(): string {
+    // console.log(this.context.row.getValue('name'));
     const { properties } = this.node.entry;
     // console.log(this.node.entry.name);
     return properties ? properties['cm:description'] : '';
@@ -101,6 +103,8 @@ export class SearchResultsRowComponent implements OnInit, OnDestroy {
   }
 
   get user(): string {
+    // console.log(this.node.entry.modifiedByUser.displayName);
+    // console.log(this.context);
     return this.node.entry.modifiedByUser.displayName;
   }
 

@@ -36,7 +36,8 @@ import { AuthGuardEcm, BlankPageComponent } from '@alfresco/adf-core';
 import { FavoritesComponent } from './components/favorites/favorites.component';
 import { RecentFilesComponent } from './components/recent-files/recent-files.component';
 import { SharedFilesComponent } from './components/shared-files/shared-files.component';
-import { CustomSearchComponent } from "./components/custom-search/custom-search.component";
+import { CustomSearchComponent } from './components/custom-search/custom-search.component';
+import { CustomSearchResultComponent } from "./components/custom-search-result/custom-search-result.component";
 
 export const APP_ROUTES: Routes = [
   {
@@ -91,6 +92,13 @@ export const APP_ROUTES: Routes = [
             }
           }
         ]
+      },
+      {
+        path: 'advancedsearchresults',
+        component: CustomSearchResultComponent,
+        data: {
+          title: 'APP.BROWSE.SEARCH.TITLE'
+        }
       },
       {
         path: 'personal-files',

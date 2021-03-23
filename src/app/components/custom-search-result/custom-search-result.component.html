@@ -1,0 +1,228 @@
+<aca-page-layout>
+  <aca-page-layout-header>
+    <adf-breadcrumb root="APP.BROWSE.SEARCH.TITLE"> </adf-breadcrumb>
+  </aca-page-layout-header>
+
+  <aca-page-layout-content>
+    <div class="main-content">
+
+      <ul>
+        <li *ngFor="let entry of result.entries">{{entry.entry.name}}</li>
+      </ul>
+
+
+    </div>
+  </aca-page-layout-content>
+</aca-page-layout>
+
+<!--<aca-page-layout>-->
+<!--  <aca-page-layout-header>-->
+<!--    <adf-breadcrumb root="APP.BROWSE.SEARCH.TITLE"> </adf-breadcrumb>-->
+<!--  </aca-page-layout-header>-->
+
+<!--  <aca-page-layout-content>-->
+<!--    <div class="main-content">-->
+<!--      <div class="adf-search-results">-->
+<!--        <div class="adf-search-results__content">-->
+<!--          <mat-progress-bar-->
+<!--            *ngIf="isLoading"-->
+<!--            color="primary"-->
+<!--            mode="indeterminate"-->
+<!--          >-->
+<!--          </mat-progress-bar>-->
+<!--          <div-->
+<!--            class="adf-search-results__content-header content"-->
+<!--            *ngIf="data?.list.entries.length"-->
+<!--          >-->
+<!--            <div class="content__side&#45;&#45;left">-->
+<!--              <div-->
+<!--                class="adf-search-results&#45;&#45;info-text"-->
+<!--                *ngIf="totalResults !== 1"-->
+<!--              >-->
+<!--                {{-->
+<!--                'APP.BROWSE.SEARCH.FOUND_RESULTS'-->
+<!--                  | translate: { number: totalResults }-->
+<!--                }}-->
+<!--              </div>-->
+<!--              <div-->
+<!--                class="adf-search-results&#45;&#45;info-text"-->
+<!--                *ngIf="totalResults === 1"-->
+<!--              >-->
+<!--                {{-->
+<!--                'APP.BROWSE.SEARCH.FOUND_ONE_RESULT'-->
+<!--                  | translate: { number: totalResults }-->
+<!--                }}-->
+<!--              </div>-->
+
+<!--              <div class="adf-search-results__facets">-->
+<!--                <adf-search-chip-list-->
+<!--                  [searchFilter]="searchFilter"-->
+<!--                ></adf-search-chip-list>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <adf-search-sorting-picker-->
+<!--              class="content__side&#45;&#45;right"-->
+<!--            ></adf-search-sorting-picker>-->
+<!--          </div>-->
+<!--          <adf-document-list-->
+<!--            #documentList-->
+<!--            acaDocumentList-->
+<!--            acaContextActions-->
+<!--            [display]="documentDisplayMode$ | async"-->
+<!--            selectionMode="multiple"-->
+<!--            [sorting]="['modifiedAt', 'desc']"-->
+<!--            [imageResolver]="imageResolver"-->
+<!--            [node]="data"-->
+<!--            sortingMode="client"-->
+<!--            (node-dblclick)="preview($event.detail?.node)"-->
+<!--            (name-click)="preview($event.detail?.node)"-->
+<!--            (node-dblclick)="onNodeDoubleClick($event.detail?.node)"-->
+<!--            [hidden]="count===0"-->
+<!--          >-->
+<!--            <div>-->
+<!--              <data-columns>-->
+<!--                <data-column key="$thumbnail" type="image"></data-column>-->
+<!--                <data-column-->
+<!--                  title="Relevance"-->
+<!--                  key="search.score"-->
+<!--                  sortable="true">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="FileName"-->
+<!--                  key="name"-->
+<!--                  sortable="true"-->
+<!--                  class="adf-grow-cell">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Title"-->
+<!--                  key="properties.cm:title"-->
+<!--                  sortable="true"-->
+<!--                  class="desktop-only">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Modified Date"-->
+<!--                  key="modifiedAt"-->
+<!--                  type="date"-->
+<!--                  format="dd.MM.yyyy HH:mm "-->
+<!--                  sortable="true"-->
+<!--                  class="adf-ellipsis-cell">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Modifier"-->
+<!--                  key="modifiedByUser.displayName"-->
+<!--                  type="text"-->
+<!--                  format="medium"-->
+<!--                  sortable="true"-->
+<!--                  class="adf-ellipsis-cell">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Created By"-->
+<!--                  key="createdByUser.displayName"-->
+<!--                  sortable="true"-->
+<!--                  class="desktop-only">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Created Day"-->
+<!--                  key="createdAt"-->
+<!--                  type="date"-->
+<!--                  format="dd.MM.yyyy HH:mm "-->
+<!--                  sortable="true"-->
+<!--                  class="desktop-only">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="Size"-->
+<!--                  key="content.sizeInBytes"-->
+<!--                  type="fileSize"-->
+<!--                  format="medium"-->
+<!--                  sortable="true"-->
+<!--                  class="adf-no-grow-cell adf-ellipsis-cell">-->
+<!--                </data-column>-->
+<!--                <data-column-->
+<!--                  title="File Type"-->
+<!--                  key="content.mimeTypeName"-->
+<!--                  type="text"-->
+<!--                  sortable="true"-->
+<!--                  class="adf-grow-cell">-->
+<!--                </data-column>-->
+
+<!--                <data-column-->
+<!--                  title="Location"-->
+<!--                  key="path.elements.4.name"-->
+<!--                  type="text"-->
+<!--                  format="/"-->
+<!--                  sortable="true"-->
+<!--                  class="adf-grow-cell">-->
+<!--                </data-column>-->
+<!--              </data-columns>-->
+<!--              <adf-custom-empty-content-template>-->
+<!--                <ng-container *ngIf="data">-->
+<!--                  <div class="empty-search__block">-->
+<!--                    <p class="empty-search__text">-->
+<!--                      {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}-->
+<!--                    </p>-->
+<!--                  </div>-->
+<!--                </ng-container>-->
+<!--              </adf-custom-empty-content-template>-->
+<!--            </div>-->
+<!--          </adf-document-list>-->
+<!--          &lt;!&ndash;          Toggle&ndash;&gt;-->
+<!--          <adf-document-list-->
+<!--            #documentList-->
+<!--            acaDocumentList-->
+<!--            acaContextActions-->
+<!--            [showHeader]="false"-->
+<!--            [selectionMode]="'multiple'"-->
+<!--            [sortingMode]="'server'"-->
+<!--            [sorting]="sorting"-->
+<!--            [imageResolver]="imageResolver"-->
+<!--            [node]="data"-->
+<!--            (node-dblclick)="onNodeDoubleClick($event.detail?.node)"-->
+<!--            [hidden]="count===1"-->
+<!--          >-->
+<!--            <div>-->
+<!--              <data-columns>-->
+<!--                <data-column-->
+<!--                  [key]="'$thumbnail'"-->
+<!--                  [type]="'image'"-->
+<!--                  [sr-title]="'ADF-DOCUMENT-LIST.LAYOUT.THUMBNAIL'"-->
+<!--                  [sortable]="false"-->
+<!--                >-->
+<!--                </data-column>-->
+<!--                <data-column key type="text">-->
+<!--                  <ng-template let-context>-->
+<!--                    <aca-search-results-row-->
+<!--                      [context]="context"-->
+<!--                    ></aca-search-results-row>-->
+<!--                  </ng-template>-->
+<!--                </data-column>-->
+<!--              </data-columns>-->
+<!--              <adf-custom-empty-content-template>-->
+<!--                <ng-container *ngIf="data">-->
+<!--                  <div class="empty-search__block">-->
+<!--                    <p class="empty-search__text">-->
+<!--                      {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}-->
+<!--                    </p>-->
+<!--                  </div>-->
+<!--                </ng-container>-->
+<!--              </adf-custom-empty-content-template>-->
+<!--            </div>-->
+<!--          </adf-document-list>-->
+<!--          <adf-pagination-->
+<!--            *ngIf="documentList"-->
+<!--            acaPagination-->
+<!--            [target]="documentList"-->
+<!--            (change)="onPaginationChanged($event)"-->
+<!--          >-->
+<!--          </adf-pagination>-->
+<!--          &lt;!&ndash;          <adf-pagination *ngIf="count===1" acaPagination  [target]="documentList"  (change)="onPaginationChanged($event)"> </adf-pagination>&ndash;&gt;-->
+
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="sidebar" *ngIf="infoDrawerOpened$ | async">-->
+<!--      <aca-info-drawer [node]="selection.last"></aca-info-drawer>-->
+<!--    </div>-->
+<!--  </aca-page-layout-content>-->
+<!--</aca-page-layout>-->
+

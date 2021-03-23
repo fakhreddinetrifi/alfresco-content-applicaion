@@ -61,7 +61,9 @@
             <adf-search-sorting-picker
               class="content__side--right"
             ></adf-search-sorting-picker>
-          </div>
+            <button mat-raised-button color="primary"  (click)="export()"> Export as Excel</button>
+
+        </div>
           <adf-document-list
             #documentList
             acaDocumentList
@@ -70,6 +72,7 @@
             selectionMode="multiple"
             [sorting]="['modifiedAt', 'desc']"
             [imageResolver]="imageResolver"
+            [stickyHeader]=true
             [node]="data"
             sortingMode="client"
             (node-dblclick)="preview($event.detail?.node)"
@@ -78,27 +81,28 @@
             [hidden]="count===0"
             >
             <div>
+              <adf-datatable id="ExampleTable">
             <data-columns>
               <data-column key="$thumbnail" type="image"></data-column>
               <data-column
-                title="Relevance"
+                title="SEARCH.SORT.RELEVANCE"
                 key="search.score"
                 sortable="true">
               </data-column>
               <data-column
-                title="FileName"
+                title="SEARCH.SORT.FILENAME"
                 key="name"
                 sortable="true"
                 class="adf-grow-cell">
               </data-column>
                             <data-column
-                              title="Title"
+                              title="METADATA.BASIC.TITLE"
                               key="properties.cm:title"
                               sortable="true"
                               class="desktop-only">
                             </data-column>
               <data-column
-                title="Modified Date"
+                title="METADATA.BASIC.MODIFIED_DATE"
                 key="modifiedAt"
                 type="date"
                 format="dd.MM.yyyy HH:mm "
@@ -106,7 +110,7 @@
                 class="adf-ellipsis-cell">
               </data-column>
               <data-column
-                title="Modifier"
+                title="METADATA.BASIC.MODIFIER"
                 key="modifiedByUser.displayName"
                 type="text"
                 format="medium"
@@ -114,13 +118,13 @@
                 class="adf-ellipsis-cell">
               </data-column>
               <data-column
-                title="Created By"
+                title="METADATA.BASIC.CREATOR"
                 key="createdByUser.displayName"
                 sortable="true"
                 class="desktop-only">
               </data-column>
               <data-column
-                title="Created Day"
+                title="METADATA.BASIC.CREATED_DATE"
                 key="createdAt"
                 type="date"
                 format="dd.MM.yyyy HH:mm "
@@ -128,7 +132,7 @@
                 class="desktop-only">
               </data-column>
               <data-column
-                title="Size"
+                title="METADATA.BASIC.SIZE"
                 key="content.sizeInBytes"
                 type="fileSize"
                 format="medium"
@@ -136,7 +140,7 @@
                 class="adf-no-grow-cell adf-ellipsis-cell">
               </data-column>
               <data-column
-                title="File Type"
+                title="SEARCH.FACET_FIELDS.FILE_TYPE"
                 key="content.mimeTypeName"
                 type="text"
                 sortable="true"
@@ -144,7 +148,7 @@
               </data-column>
 
               <data-column
-                title="Location"
+                title="APP.DOCUMENT_LIST.COLUMNS.LOCATION"
                 key="path.elements.4.name"
                 type="text"
                 format="/"
@@ -152,7 +156,9 @@
                 class="adf-grow-cell">
               </data-column>
             </data-columns>
-            <adf-custom-empty-content-template>
+
+              </adf-datatable>
+              <adf-custom-empty-content-template>
               <ng-container *ngIf="data">
                 <div class="empty-search__block">
                   <p class="empty-search__text">
@@ -169,6 +175,7 @@
             acaDocumentList
             acaContextActions
             [showHeader]="false"
+            [stickyHeader]="true"
             [selectionMode]="'multiple'"
             [sortingMode]="'server'"
             [sorting]="sorting"

@@ -86,6 +86,7 @@ import localeSv from '@angular/common/locales/sv';
 import { CustomSearchComponent } from './components/custom-search/custom-search.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { CustomSearchResultComponent } from "./components/custom-search-result/custom-search-result.component";
 
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);
@@ -152,7 +153,8 @@ registerLocaleData(localeSv);
     RecentFilesComponent,
     SharedFilesComponent,
     CreateFromTemplateDialogComponent,
-    CustomSearchComponent
+    CustomSearchComponent,
+    CustomSearchResultComponent
   ],
   providers: [
     { provide: AppConfigService, useClass: DebugAppConfigService },

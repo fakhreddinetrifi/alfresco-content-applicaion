@@ -43,22 +43,6 @@ import { ZoubliService } from 'src/app/zoubli.service';
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent extends PageComponent implements OnInit {
-  @ViewChild('searchFilter', { static: true })
-  searchFilter: SearchFilterComponent;
-  show = true;
-  parametre = [];
-  showFacetFilter$: Observable<boolean>;
-  searchedWord: string;
-  queryParamName = 'q';
-  data: ResultSetPaging;
-  totalResults = 0;
-  hasSelectedFilters = false;
-  sorting = ['name', 'asc'];
-  isLoading = false;
-  columns: DocumentListPresetRef[] = [];
-  count = 0;
-  hidden = false;
-
   constructor(
     private queryBuilder: SearchQueryBuilderService,
     private route: ActivatedRoute,
@@ -78,11 +62,51 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     };
     this.showFacetFilter$ = store.select(showFacetFilter);
   }
+  @ViewChild('searchFilter', { static: true })
+  searchFilter: SearchFilterComponent;
+  show = true;
+  parametre = [];
+  showFacetFilter$: Observable<boolean>;
+  searchedWord: string;
+  queryParamName = 'q';
+  data: ResultSetPaging;
+  totalResults = 0;
+  hasSelectedFilters = false;
+  sorting = ['name', 'asc'];
+  isLoading = false;
+  columns: DocumentListPresetRef[] = [];
+  count = 0;
+  hidden = false;
+  EXCEL_TYPE: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  EXCEL_EXTENSION: '.xlsx';
+  displayedColumns: string[] = ['name', 'age', 'address', 'subject', 'email'];
+  context: any;
+
+  studentData = [
+    {
+      names: ['jhon', 'deo'],
+      ages: [19, 20],
+      address: ['pattan', 'baramulla'],
+      subjects: ['Eng', 'Math', 'Science'],
+      emails: ['jeo@email.com', 'deo@email.com']
+    }
+  ];
+  dataSource;
+  //Fouth Attempt
+  // public exportAsExcelFile(json: any[], excelFileName: string): void {
+  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+  //   const workbook: XLSX.WorkBook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+  //   const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  //   this.saveAsExcelFile(excelBuffer, excelFileName);
+  // }
+  // private saveAsExcelFile(buffer: any, fileName: string): void {
+  //   const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+  //   const EXCEL_EXTENSION = '.xlsx';
+  //   FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   ngOnInit() {
     super.ngOnInit();
     this.count = this._dataService.getOption();
     // console.log(this._dataService.getOption());
-    // console.log("zoubliSearch");
     this.sorting = this.getSorting();
     this.subscriptions.push(
       this.queryBuilder.updated.subscribe((query) => {
@@ -192,7 +216,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     this.totalResults = this.getNumberOfResults();
     this.hasSelectedFilters = this.isFiltered();
     this.parametre = this.data.list.entries;
-    console.log(this.parametre);
   }
 
   getNumberOfResults() {
@@ -258,4 +281,147 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     }
     return false;
   }
+
+  // exportToExcel() {
+  //   console.log(this.data.list.entries);
+  //   // this.exportAsExcelFile(this.data.list.entries, 'eoubli');
+  //   // const workSheet = XLSX.utils.table_to_sheet(this.data.list.entries);
+  //   // const workBook: XLSX.WorkBook = XLSX.utils.book_new();
+  //   // XLSX.utils.book_append_sheet(workBook, workSheet, 'SheetName');
+  //   // XLSX.writeFile(workBook, 'filename.xlsx');
+  //   // Second Attempt
+  //   // const wb = XLSX.utils.book_new();
+  //   // const ws = XLSX.utils.json_to_sheet(this.data.list.entries);
+  //   // XLSX.utils.book_append_sheet(wb, ws, 'test');
+  //   // XLSX.writeFile(wb, `${'fileName'}.xlsx`);
+  //   //Third Attempt
+  // }
+  export() {
+    this.downloadFile();
+  }
+
+  downloadFile() {
+    console.log(this.data.list.entries[0].entry);
+    // this.context = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
+    // console.log(this.context);
+
+    // const csvData = this.ConvertToCSV(
+    //   this.data.list.entries.map((object) => object.entry),
+    //   ['name', 'createdAt', 'modifiedAt']
+    // );
+    // const csvData2 = this.ConvertToCSV(
+    //   this.data.list.entries.map((object) => object.entry.createdByUser),
+    //   ['displayName']
+    // );
+    // const csvData3 = this.ConvertToCSV(
+    //   this.data.list.entries.map((object) => object.entry.content),
+    //   ['mimeTypeName']
+    // );
+    // const csvData4 = this.ConvertToCSV(
+    //   // tslint:disable-next-line:prettier
+    //   this.data.list.entries.map((object) => object.entry.path),
+    //   ['name']
+    // );
+    console.log(this.data.list.entries[0].entry.content.mimeType);
+
+    const filet = this.data.list.entries.map((content) => content.entry.createdAt);
+    const filet2 = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
+    const filet3 = this.data.list.entries.map((object) => object.entry.name);
+    const filet4 = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
+    const filet5 = this.data.list.entries.map((object) => {
+      return object.entry.modifiedAt;
+    });
+    const filet6 = this.data.list.entries.map((object) => {
+      return object.entry.modifiedByUser.displayName;
+    });
+    const output = filet.map((s, i) => ({
+      CreatedAt: s,
+      CreatedBy: filet2[i],
+      Name: filet3[i],
+      ModifiedBy: filet4[i],
+      ModifiedAt: filet5[i],
+      shade5: filet6[i]
+    }));
+    console.log(output);
+    const csvData = this.ConvertToCSV(output, ['CreatedAt', 'CreatedBy', 'Name', 'ModifiedBy', 'ModifiedAt']);
+    const blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
+    const dwldLink = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    const isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
+    if (isSafariBrowser) {
+      //if Safari open in new window to save file with random filename.
+      dwldLink.setAttribute('target', '_blank');
+    }
+    dwldLink.setAttribute('href', url);
+    dwldLink.setAttribute('download', 'filename' + '.csv');
+    dwldLink.style.visibility = 'hidden';
+    document.body.appendChild(dwldLink);
+    dwldLink.click();
+    document.body.removeChild(dwldLink);
+  }
+
+  ConvertToCSV(objArray, headerList) {
+    const array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    let str = '';
+    let row = 'Index,';
+
+    for (const index in headerList) {
+      row += headerList[index] + ',';
+    }
+    row = row.slice(0, -1);
+    str += row + '\r\n';
+    for (let i = 0; i < array.length; i++) {
+      let line = i + 1 + '';
+      for (const index in headerList) {
+        const head = headerList[index];
+
+        line += ',' + array[i][head];
+      }
+      str += line + '\r\n';
+    }
+    return str;
+  }
 }
+// exportToCsv(filename: string, rows: object[]) {
+//   if (!rows || !rows.length) {
+//     return;
+//   }
+//   const usersJson: any[] = Array.of(this.data.list.entries);
+//   console.log(usersJson);
+// const separator = ',';
+// const keys = Object.keys(rows[0]);
+// // const csvContent =
+// //   keys.join(separator) +
+// //   '\n' +
+// //   rows
+// //     .map((row) => {
+// //       return keys
+// //         .map((k) => {
+// //           let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+// //           cell = cell instanceof Date ? cell.toLocaleString() : cell.toString().replace(/"/g, '""');
+// //           if (cell.search(/("|,|\n)/g) >= 0) {
+// //             cell = `"${cell}"`;
+// //           }
+// //           return cell;
+// //         })
+// //         .join(separator);
+// //     })
+// //     .join('\n');
+
+// const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+// if (navigator.msSaveBlob) {
+//   // IE 10+
+//   navigator.msSaveBlob(blob, filename);
+// } else {
+//   const link = document.createElement('a');
+//   if (link.download !== undefined) {
+//     // Browsers that support HTML5 download attribute
+//     const url = URL.createObjectURL(blob);
+//     link.setAttribute('href', url);
+//     link.setAttribute('download', filename);
+//     link.style.visibility = 'hidden';
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//   }
