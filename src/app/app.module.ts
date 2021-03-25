@@ -24,7 +24,7 @@
  */
 
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -86,6 +86,9 @@ import localeSv from '@angular/common/locales/sv';
 import { CustomSearchComponent } from './components/custom-search/custom-search.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
 
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);
@@ -140,7 +143,12 @@ registerLocaleData(localeSv);
     HammerModule,
     BrowserAnimationsModule,
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    MatDatepickerModule,
+    MaterialModule, // <----- this module will be deprecated in the future version.
+    MatDatepickerModule, // <----- import(must)
+    MatNativeDateModule, // <----- import for date formating(optional)
+    MatMomentDateModule // <----- import for date formating adapted to more locales(optional)
   ],
   declarations: [
     AppComponent,
@@ -152,8 +160,9 @@ registerLocaleData(localeSv);
     RecentFilesComponent,
     SharedFilesComponent,
     CreateFromTemplateDialogComponent,
-    CustomSearchComponent,
+    CustomSearchComponent
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     { provide: AppConfigService, useClass: DebugAppConfigService },
     {

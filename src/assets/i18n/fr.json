@@ -235,6 +235,12 @@
       }
     },
     "DOCUMENT_LIST": {
+      "CUSTOM_SEARCH": {
+        "TAG": "Étiquette",
+        "FROM": "De",
+        "END": "Fin",
+        "AUTHOR": "Auteur"
+      },
       "COLUMNS": {
         "ID": "ID",
         "NAME": "Nom",
@@ -576,5 +582,10 @@
       "BOOKS-24PX": "bibliothèque de fichiers",
       "BASELINE-LOCK-24PX": "fichier verrouillé"
     }
+  },
+  "BUTTON": {
+    "Load_All_Results" :"charger tous les résultats",
+    "EXPORT-EXCEL": "Export Fichier Excel",
+    "EXPORT-PDF": "Export Fichier PDF"
   }
 }

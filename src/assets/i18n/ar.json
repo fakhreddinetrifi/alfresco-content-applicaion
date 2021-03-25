@@ -235,6 +235,12 @@
       }
     },
     "DOCUMENT_LIST": {
+      "CUSTOM_SEARCH": {
+        "TAG": "Tag",
+        "FROM": "From",
+        "END": "End",
+        "AUTHOR": "Author"
+      },
       "COLUMNS": {
         "ID": "المعرف",
         "NAME": "الاسم",
@@ -576,5 +582,10 @@
       "BOOKS-24PX": "مكتبة ملفات",
       "BASELINE-LOCK-24PX": "ملف مؤمن"
     }
+  },
+  "BUTTON": {
+    "Load_All_Results": "تحميل كافة النتائج",
+    "EXPORT-EXCEL": "تصدير ملف Excel",
+    "EXPORT-PDF": "تصدير ملف PDF"
   }
 }

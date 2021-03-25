@@ -26,14 +26,27 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
+import { PageComponent } from '../page.component';
+import { Store } from '@ngrx/store';
+import { AppStore } from '@alfresco/aca-shared/store';
+import { AppExtensionService } from '@alfresco/aca-shared';
+import { ContentManagementService } from '../../services/content-management.service';
+
 @Component({
   selector: 'aca-custom-search',
   templateUrl: './custom-search.component.html',
   styleUrls: ['./custom-search.component.scss']
 })
-export class CustomSearchComponent implements OnInit {
+export class CustomSearchComponent extends PageComponent implements OnInit {
   contractForm: FormGroup;
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    store: Store<AppStore>,
+    extensions: AppExtensionService,
+    content: ContentManagementService
+  ) {
+    super(store, extensions, content);
     this.contractForm = this.fb.group({
       name: [''],
       // contractNumber: [''],
@@ -42,12 +55,15 @@ export class CustomSearchComponent implements OnInit {
       // contractValue: [''],
       description: [''],
       author: [''],
+      tag: [''],
       start: [],
       end: []
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    super.ngOnInit();
+  }
 
   onSearchSubmit() {
     const navigationExtras: NavigationExtras = {
@@ -56,6 +72,7 @@ export class CustomSearchComponent implements OnInit {
         title: this.contractForm.value.title.toString(),
         description: this.contractForm.value.description.toString(),
         author: this.contractForm.value.author.toString(),
+        tag: this.contractForm.value.tag.toString(),
         start: this.contractForm.value.start,
         end: this.contractForm.value.end
       }

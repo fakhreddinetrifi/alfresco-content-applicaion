@@ -5,93 +5,67 @@
 
   <aca-page-layout-content>
     <div class="main-content">
+      <mat-card>
+        <form class="simple-search" [formGroup]="contractForm" (ngSubmit)="onSearchSubmit()">
+          <mat-card-title>Standard Type</mat-card-title>
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.NAME' | translate }}</mat-label>
+              <input placeholder="Ex. MyBank" matInput name="name" formControlName="name">
+            </mat-form-field>
 
-<!--      <mat-form-field class="form-field" appearance="outline">-->
-<!--        <mat-label>Name</mat-label>-->
-<!--        <input placeholder="Ex. Alex" matInput [searchAutocomplete]="settings">-->
-<!--      </mat-form-field>-->
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.TITLE' | translate }}</mat-label>
+              <input matInput placeholder="Ex. title" name="title" formControlName="title">
 
-<!--      <adf-search #search="searchAutocomplete">-->
-<!--        <ng-template let-result>-->
-<!--          <ul>-->
-<!--            <li *ngFor="let item of result?.list?.entries" (click)="getNode(item?.entry)">{{ item?.entry.name }}</li>-->
-<!--          </ul>-->
-<!--        </ng-template>-->
-<!--      </adf-search>-->
+            </mat-form-field>
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.AUTHOR' | translate }}</mat-label>
+              <input matInput placeholder="Ex. title" name="author" formControlName="author">
 
+            </mat-form-field>
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.TAG' | translate }}</mat-label>
+              <input matInput placeholder="Ex. Tag" name="tag" formControlName="tag">
+            </mat-form-field>
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.DESCRIPTION' | translate }}</mat-label>
+              <textarea matInput placeholder="Ex. It makes me feel..." name="description" formControlName="description"></textarea>
 
-      <!--      <adf-content-metadata-card-->
-<!--        [displayEmpty]="false"-->
-<!--        [toggleDisplayProperties]="displayDefaultProperties"-->
-<!--        [preset]="'*'"-->
-<!--        [node]="node">-->
-<!--      </adf-content-metadata-card>-->
+            </mat-form-field>
+            <mat-label class="label">{{ 'APP.DOCUMENT_LIST.COLUMNS.MODIFIED_ON' | translate }}</mat-label>
+            <div class="row">
+              <mat-form-field appearance="legacy" class="col-6">
+                <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.FROM' | translate }}</mat-label>
+                <input matInput [matDatepicker]="start" placeholder="From" formControlName="start">
+                <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                <mat-datepicker #start>
+                  <mat-datepicker-actions>
+                    <button mat-button matDatepickerCancel>Cancel</button>
+                    <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                  </mat-datepicker-actions>
+                </mat-datepicker>
+              </mat-form-field>
 
-
-<!--      <adf-content-metadata-card-->
-<!--        [displayEmpty]="false"-->
-<!--        [preset]="'*'"-->
-<!--        [node]="node">-->
-<!--      </adf-content-metadata-card>-->
-
-      <form class="simple-search" [formGroup]="contractForm" (ngSubmit)="onSearchSubmit()">
-<!--        <h2 style="margin-bottom: 25px;">Type Contract</h2>-->
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Name</mat-label>
-          <input placeholder="Ex. MyBank" matInput name="name" formControlName="name">
-        </mat-form-field>
-
-<!--        <mat-form-field class="form-field" appearance="outline">-->
-<!--          <mat-label>Contract number</mat-label>-->
-<!--          <input type="number" placeholder="Ex. 123" matInput name="contractNumber" formControlName="contractNumber">-->
-<!--        </mat-form-field>-->
-
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Title</mat-label>
-          <input matInput placeholder="Ex. title" name="title" formControlName="title">
-
-        </mat-form-field>
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Author</mat-label>
-          <input matInput placeholder="Ex. title" name="author" formControlName="author">
-
-        </mat-form-field>
-
-<!--        <mat-form-field class="form-field" appearance="outline">-->
-<!--          <mat-label>Contract date</mat-label>-->
-<!--          <input matInput placeholder="Ex. MM/DD/YYYY" [matDatepicker]="picker" name="contractDate" formControlName="contractDate">-->
-<!--          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>-->
-<!--          <mat-datepicker #picker></mat-datepicker>-->
-
-<!--        </mat-form-field>-->
-
-<!--        <mat-form-field class="form-field" appearance="outline">-->
-<!--          <mat-label>Contract value</mat-label>-->
-<!--          <input type="number" placeholder="Ex. 1200" matInput placeholder="Ex. Engineering Degree" name="contractValue" formControlName="contractValue">-->
-
-<!--        </mat-form-field>-->
-
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Description</mat-label>
-          <textarea matInput placeholder="Ex. It makes me feel..." name="description" formControlName="description"></textarea>
-
-        </mat-form-field>
-
-        <mat-form-field class="form-field" appearance="outline">
-          <mat-label>Modified Date</mat-label>
-          <mat-date-range-input
-            [formGroup]="contractForm"
-            [rangePicker]="campaignTwoPicker"
-            [comparisonStart]="contractForm.value.start"
-            [comparisonEnd]="contractForm.value.end">
-            <input matStartDate placeholder="From" formControlName="start">
-            <input matEndDate placeholder="To" formControlName="end">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
-          <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
-        </mat-form-field>
-        <button mat-raised-button>Submit</button>
+              <mat-form-field appearance="legacy" class="col-6">
+                <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.END' | translate }}</mat-label>
+                <input matInput [matDatepicker]="end" placeholder="End" formControlName="end">
+                <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                <mat-datepicker #end>
+                  <mat-datepicker-actions>
+                    <button mat-button matDatepickerCancel>Cancel</button>
+                    <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                  </mat-datepicker-actions>
+                </mat-datepicker>
+              </mat-form-field>
+            </div>
+            <mat-card-actions>
+              <button style="background-color: #00754a; color: white" class="button-submit" mat-raised-button>
+                <mat-icon aria-hidden="false" aria-label="Example search icon">search</mat-icon>
+                <span>{{ 'NODE_SELECTOR.SEARCH' | translate }}</span>
+              </button>
+            </mat-card-actions>
       </form>
+      </mat-card>
     </div>
   </aca-page-layout-content>
 </aca-page-layout>

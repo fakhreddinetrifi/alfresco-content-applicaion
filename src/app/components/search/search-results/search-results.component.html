@@ -62,7 +62,9 @@
             <adf-search-sorting-picker
               class="content__side--right"
             ></adf-search-sorting-picker>
-            <button mat-raised-button color="primary"  (click)="export()"> Export Result</button>
+            <button style="margin-left: 15px; margin-right: 15px;" mat-raised-button color="primary"  (click)="export()"> {{'BUTTON.EXPORT-EXCEL' | translate}}</button>
+            <button mat-raised-button color="primary"  (click)="generatePdf()"> {{'BUTTON.EXPORT-PDF' | translate}}</button>
+
 
           </div>
 
@@ -76,7 +78,6 @@
             [imageResolver]="imageResolver"
             [stickyHeader]=true
             [node]="data"
-            (node-dblclick)="preview($event.detail?.node)"
             (name-click)="preview($event.detail?.node)"
             (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
             [hidden]="count===0"
@@ -152,7 +153,7 @@
 
               </adf-datatable>
               <adf-custom-empty-content-template>
-              <ng-container *ngIf="data">
+              <ng-container>
                 <div class="empty-search__block">
                   <p class="empty-search__text">
                     {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}
@@ -175,6 +176,7 @@
             [node]="data"
             (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
             [hidden]="count===1"
+
           >
             <div>
               <data-columns>
@@ -194,7 +196,7 @@
                 </data-column>
               </data-columns>
               <adf-custom-empty-content-template>
-                <ng-container *ngIf="data">
+                <ng-container>
                   <div class="empty-search__block">
                     <p class="empty-search__text">
                       {{ 'APP.BROWSE.SEARCH.NO_RESULTS' | translate }}
@@ -204,7 +206,8 @@
               </adf-custom-empty-content-template>
             </div>
           </adf-document-list>
-          <button mat-stroked-button color="accent" (click)="loadAllResults()"> Load All Results</button>
+
+          <button mat-stroked-button color="accent" (click)="loadAllResults()" >{{'BUTTON.Load_All_Results' | translate}}</button>
 
 
           <adf-pagination

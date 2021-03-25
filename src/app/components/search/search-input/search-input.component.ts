@@ -91,7 +91,6 @@ export class SearchInputComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showInputValue();
-
     this.router.events
       .pipe(takeUntil(this.onDestroy$))
       .pipe(filter((e) => e instanceof RouterEvent))
