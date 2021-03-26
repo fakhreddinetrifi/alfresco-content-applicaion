@@ -48,14 +48,15 @@ export class CustomSearchComponent extends PageComponent implements OnInit {
   ) {
     super(store, extensions, content);
     this.contractForm = this.fb.group({
-      name: [''],
+      'cm:name': [''],
       // contractNumber: [''],
-      title: [''],
+      'cm:title': [''],
       // contractDate: [''],
       // contractValue: [''],
-      description: [''],
-      author: [''],
-      tag: [''],
+      'cm:description': [''],
+      'cm:author': [''],
+      'cm:creator': [''],
+      TAG: [''],
       start: [],
       end: []
     });
@@ -66,16 +67,22 @@ export class CustomSearchComponent extends PageComponent implements OnInit {
   }
 
   onSearchSubmit() {
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        name: this.contractForm.value.name.toString(),
-        title: this.contractForm.value.title.toString(),
-        description: this.contractForm.value.description.toString(),
-        author: this.contractForm.value.author.toString(),
-        tag: this.contractForm.value.tag.toString(),
-        start: this.contractForm.value.start,
-        end: this.contractForm.value.end
+
+    let obj = '{';
+    Object.entries(this.contractForm.value).filter(([key, value]) => {
+      if (value !== '' && value !== null && value !== undefined && key !== 'start' && key !== 'end') {
+        console.log(key)
+        obj += '"' + key + '"' + ': ' + '"' + value + '"' + ', ';
       }
+    });
+    if (this.contractForm.value.start !== null && this.contractForm.value.end !== null) {
+      const date1 = (new Date().getTime() - new Date(this.contractForm.value.start).getTime()) / (1000 * 3600 * 24);
+      const date2 = (new Date().getTime() - new Date(this.contractForm.value.end).getTime()) / (1000 * 3600 * 24);
+      obj += '"cm:modified":"[NOW/DAY-' + Math.round(date1) + 'DAYS TO NOW/DAY+' + Math.round(date2) + 'DAY]", ';
+    }
+    console.log(obj)
+    const navigationExtras: NavigationExtras = {
+      queryParams: JSON.parse(obj.substring(0, obj.length - 2) + '}')
     };
     this.router.navigate(['search'], navigationExtras);
   }

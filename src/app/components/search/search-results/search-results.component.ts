@@ -37,6 +37,7 @@ import { AppExtensionService } from '@alfresco/aca-shared';
 import { DocumentListPresetRef } from '@alfresco/adf-extensions';
 import { ZoubliService } from 'src/app/zoubli.service';
 import * as jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 require('jspdf-autotable');
 // import autoTable from 'jspdf-autotable';
 // import html2canvas from 'html2canvas';
@@ -81,16 +82,7 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
   hidden = false;
   header = [['ID', 'Name', 'Email', 'Profile']];
 
-  tableData = [
-    [1, 'John', 'john@yahoo.com', 'HR'],
-    [2, 'Angel', 'angel@yahoo.com', 'Marketing'],
-    [3, 'Harry', 'harry@yahoo.com', 'Finance'],
-    [4, 'Anne', 'anne@yahoo.com', 'Sales'],
-    [5, 'Hardy', 'hardy@yahoo.com', 'IT'],
-    [6, 'Nikole', 'nikole@yahoo.com', 'Admin'],
-    [7, 'Sandra', 'Sandra@yahoo.com', 'Sales'],
-    [8, 'Lil', 'lil@yahoo.com', 'Sales']
-  ];
+  tableData = [];
   ngOnInit() {
     super.ngOnInit();
 
@@ -103,13 +95,15 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
           this.isLoading = true;
         }
       }),
-      this.queryBuilder.executed.subscribe((data) => {
-        this.queryBuilder.paging.skipCount = 0;
-        // this.queryBuilder.paging.maxItems=this.data.list.pagination.totalItems;
-        // console.log(data);
-        this.onSearchResultLoaded(data);
-        this.isLoading = false;
-      }),
+        this.queryBuilder.executed.subscribe((data) => {
+          this.queryBuilder.paging.skipCount = 0;
+          data.list.entries.forEach(value => console.log(value.entry.properties))
+          // this.queryBuilder.paging.maxItems=this.data.list.pagination.totalItems;
+          // console.log(data);
+          data.list.entries.forEach(value => console.log(value.entry.createdByUser))
+          this.onSearchResultLoaded(data);
+          this.isLoading = false;
+        }),
 
       this.queryBuilder.error.subscribe((err: any) => {
         this.onSearchError(err);
@@ -124,29 +118,39 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
           query = this.formatSearchQuery(this.searchedWord);
         } else {
           this.route.queryParams.subscribe((parametre) => {
-            const name = parametre['name'];
-            const title = parametre['title'];
-            const description = parametre['description'];
-            const author = parametre['author'];
-            const start = parametre['start'];
-            const end = parametre['end'];
-            const tag = parametre['tag'];
-            if (name === '' && title === '' && description === '' && author === '' && start === undefined && end === undefined) {
-              query = this.formatSearchQuery('*');
-            } else if (start !== undefined && end !== undefined) {
-              const date1 = (new Date().getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
-              const date2 = (new Date().getTime() - new Date(end).getTime()) / (1000 * 3600 * 24);
-              query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY+${Math.round(date2)}DAY] AND TAG:"${tag}*")`;
-            } else {
-              query = `
-                (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND TAG:"${tag}*")
-                OR
-                (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND TAG:"${tag}*")
-                OR
-                (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*")
-                OR
-                (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND TAG:"${tag}*")`;
-            }
+            query = '(';
+            Object.entries(parametre).forEach(([key, value]) => {
+              if (key === 'cm:modified') {
+                query += key + ':' + value + ' AND ';
+              } else {
+                query += key + ':"' + value + '*" AND ';
+              }
+            })
+            query = query.substring(0, query.length - 5) + ')';
+
+            // const name = parametre['name'];
+            // const title = parametre['title'];
+            // const description = parametre['description'];
+            // const author = parametre['author'];
+            // const start = parametre['start'];
+            // const end = parametre['end'];
+            // const tag = parametre['tag'];
+            // if (name === '' && title === '' && description === '' && author === '' && start === undefined && end === undefined) {
+            //   query = this.formatSearchQuery('*');
+            // } else if (start !== undefined && end !== undefined) {
+            //   const date1 = (new Date().getTime() - new Date(start).getTime()) / (1000 * 3600 * 24);
+            //   const date2 = (new Date().getTime() - new Date(end).getTime()) / (1000 * 3600 * 24);
+            //   query = `(cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND cm:modified:[NOW/DAY-${Math.round(date1)}DAYS TO NOW/DAY+${Math.round(date2)}DAY] AND TAG:"${tag}*")`;
+            // } else {
+            //   query = `
+            //     (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND TAG:"${tag}*")
+            //     OR
+            //     (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND TAG:"${tag}*")
+            //     OR
+            //     (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*")
+            //     OR
+            //     (cm:name:"${name}*" AND cm:title:"${title}*" AND cm:description:"${description}*" AND cm:author:"${author}*" AND TAG:"${tag}*")`;
+            // }
           });
         }
         console.log(query);
@@ -318,44 +322,51 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       }
     });
     const Relevance = this.data.list.entries.map((content) => content.entry.search.score);
-    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt.toString().substring(0, 25));
+    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt);
     const CreatedBy = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
     const Name = this.data.list.entries.map((object) => object.entry.name);
     const ModifiedBy = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
     const ModifiedAt = this.data.list.entries.map((object) => {
-      return object.entry.modifiedAt.toString().substring(0, 25);
+      return object.entry.modifiedAt;
     });
+
     const Path = this.data.list.entries.map((object) => {
-      if (object.entry.path.elements[1] === undefined) {
-        return 'no location available';
-      } else if (object.entry.path.elements[2] === undefined) {
-        return object.entry.path.elements[1].name;
-      } else if (object.entry.path.elements[3] === undefined) {
-        return object.entry.path.elements[2].name;
-      } else if (object.entry.path.elements[4] === undefined) {
-        return object.entry.path.elements[3].name;
-      } else if (object.entry.path.elements[5] === undefined) {
-        return object.entry.path.elements[4].name;
-      } else return object.entry.path.elements[5].name;
+      if (object.entry.isFolder === true) {
+        return '';
+      } else {
+        if (object.entry.path.elements[1] === undefined) {
+          return 'no location available';
+        } else if (object.entry.path.elements[2] === undefined) {
+          return object.entry.path.elements[1].name;
+        } else if (object.entry.path.elements[3] === undefined) {
+          return object.entry.path.elements[2].name;
+        } else if (object.entry.path.elements[4] === undefined) {
+          return object.entry.path.elements[3].name;
+        } else if (object.entry.path.elements[5] === undefined) {
+          return object.entry.path.elements[4].name;
+        } else return object.entry.path.elements[4].name;
+      }
     });
     const Size = this.data.list.entries.map((object) => {
       let i;
       if (object.entry.isFile === true) {
-        if (object.entry.content.sizeInBytes >= 1073741824) {
-          i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
-        } else if (object.entry.content.sizeInBytes >= 1048576) {
-          i = (object.entry.content.sizeInBytes / 1048576).toFixed(2) + ' MB';
-        } else if (object.entry.content.sizeInBytes >= 1024) {
-          i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
-        } else if (object.entry.content.sizeInBytes > 1) {
-          i = object.entry.content.sizeInBytes + ' bytes';
-        } else if (object.entry.content.sizeInBytes == 1) {
-          i = object.entry.content.sizeInBytes + ' byte';
-        } else {
-          i = '0 bytes';
-        }
-        return i;
-      } else return 'folder has no size';
+        // if (object.entry.content.sizeInBytes >= 1073741824) {
+        //   i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
+        // }
+        // else
+        //   if (object.entry.content.sizeInBytes >= 1048576) {
+        i = (object.entry.content.sizeInBytes / 1048576).toFixed(3) + ' MB';
+        // }
+        // else if (object.entry.content.sizeInBytes >= 1024) {
+        //   i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
+        // } else if (object.entry.content.sizeInBytes > 1) {
+        //   i = object.entry.content.sizeInBytes + ' bytes';
+        // } else if (object.entry.content.sizeInBytes == 1) {
+        //   i = object.entry.content.sizeInBytes + ' byte';
+      } else {
+        i = 'Folder Has no size';
+      }
+      return i;
     });
     const Title = this.data.list.entries.map((content) => {
       // tslint:disable-next-line:prettier
@@ -447,17 +458,21 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       return object.entry.modifiedAt.toString().substring(0, 25);
     });
     const Path = this.data.list.entries.map((object) => {
-      if (object.entry.path.elements[1] === undefined) {
-        return 'no location available';
-      } else if (object.entry.path.elements[2] === undefined) {
-        return object.entry.path.elements[1].name;
-      } else if (object.entry.path.elements[3] === undefined) {
-        return object.entry.path.elements[2].name;
-      } else if (object.entry.path.elements[4] === undefined) {
-        return object.entry.path.elements[3].name;
-      } else if (object.entry.path.elements[5] === undefined) {
-        return object.entry.path.elements[4].name;
-      } else return object.entry.path.elements[5].name;
+      if (object.entry.isFolder === true) {
+        return '';
+      } else {
+        if (object.entry.path.elements[1] === undefined) {
+          return 'no location available';
+        } else if (object.entry.path.elements[2] === undefined) {
+          return object.entry.path.elements[1].name;
+        } else if (object.entry.path.elements[3] === undefined) {
+          return object.entry.path.elements[2].name;
+        } else if (object.entry.path.elements[4] === undefined) {
+          return object.entry.path.elements[3].name;
+        } else if (object.entry.path.elements[5] === undefined) {
+          return object.entry.path.elements[4].name;
+        } else return object.entry.path.elements[4].name;
+      }
     });
     const Size = this.data.list.entries.map((object) => {
       let i;
@@ -500,42 +515,30 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       Location: Path[i]
     }));
     console.log(output);
-    const pdf = new jsPDF();
+    for (let i = 0; i < output.length; i++) {
+      Object.values(output[i]);
+      this.tableData.push(Object.values(output[i]));
+    }
+    console.log(this.tableData);
+    console.log(this.tableData);
+    const pdf = new jsPDF({ orientation: 'landscape', lineHeight: 1 });
 
     for (let i = 0; i < output.length; i++) {
       console.log(output[i].Relevance); //use i instead of 0
     }
-    (pdf as any).autoTable({
-      head: [['Relevance', 'FileName', 'Title', 'ModifiedDate', 'Modifier', 'Creator', 'CreatedDate', 'Size', 'FileType', 'Location']],
 
-      theme: 'grid'
+    autoTable(pdf, {
+      margin: { top: 8 },
+      head: [['FileName', 'Relevance', 'Title', 'CreatedDate', 'Creator', 'Modifier', 'ModifiedDate', 'FileType', 'Size', 'Location']],
+      body: this.tableData,
+      theme: 'grid',
+      styles: { fontSize: 6 },
+      didDrawCell: (data) => {
+        console.log(data.column.index);
+      }
     });
-    for (let i = 0; i < output.length; i++) {
-      (pdf as any).autoTable({
-        body: [
-          [
-            output[i].Relevance,
-            output[i].FileName,
-            output[i].Title,
-            output[i].ModifiedDate,
-            output[i].Modifier,
-            output[i].Creator,
-            output[i].CreatedDate,
-            output[i].Size,
-            output[i].FileType,
-            output[i].Location
-          ]
-        ],
-        theme: 'striped',
-        styles: { fontSize: 6.5 },
-        didDrawCell: (data) => {
-          console.log(data.column.index);
-        }
-      });
-    }
 
     // Open PDF document in browser's new tab
-    pdf.setFontSize(4);
     // Download PDF doc
     pdf.save('ZoubliExport.pdf');
   }

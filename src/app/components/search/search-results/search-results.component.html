@@ -62,8 +62,10 @@
             <adf-search-sorting-picker
               class="content__side--right"
             ></adf-search-sorting-picker>
-            <button style="margin-left: 15px; margin-right: 15px;" mat-raised-button color="primary"  (click)="export()"> {{'BUTTON.EXPORT-EXCEL' | translate}}</button>
-            <button mat-raised-button color="primary"  (click)="generatePdf()"> {{'BUTTON.EXPORT-PDF' | translate}}</button>
+            <button mat-raised-button color="Warn"  (click)="export()" style="margin: 15px; background-color: rgb(251 176 62);color: white" > <mat-icon>description</mat-icon>
+              {{'BUTTON.EXPORT-EXCEL' | translate}}</button>
+            <button mat-raised-button color="accent"  (click)="generatePdf()"> <mat-icon>picture_as_pdf</mat-icon>
+              {{'BUTTON.EXPORT-PDF' | translate}}</button>
 
 
           </div>
@@ -78,7 +80,6 @@
             [imageResolver]="imageResolver"
             [stickyHeader]=true
             [node]="data"
-            (name-click)="preview($event.detail?.node)"
             (node-dblclick)="onNodeDoubleClick($event.detail?.node)"
             [hidden]="count===0"
             >
@@ -150,7 +151,6 @@
                 class="adf-grow-cell">
               </data-column>
             </data-columns>
-
               </adf-datatable>
               <adf-custom-empty-content-template>
               <ng-container>
@@ -207,7 +207,7 @@
             </div>
           </adf-document-list>
 
-          <button mat-stroked-button color="accent" (click)="loadAllResults()" >{{'BUTTON.Load_All_Results' | translate}}</button>
+          <button mat-stroked-button color="accent" (click)="loadAllResults()" style="color: white;background-color:#0869b0 " > <mat-icon>cached</mat-icon>{{'BUTTON.Load_All_Results' | translate}}</button>
 
 
           <adf-pagination

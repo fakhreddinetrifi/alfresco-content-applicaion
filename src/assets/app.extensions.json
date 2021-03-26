@@ -287,6 +287,10 @@
         "rules": {
           "visible": "app.navigation.isSearchResults"
         }
+      },{
+        "id": "app.create.separator",
+        "type": "separator",
+        "order": 80
       },
       {
         "id": "app.toolbar.share",
@@ -315,14 +319,14 @@
       },
       {
         "id": "app.toolbar.download",
-        "order": 200,
+        "order": 350,
         "title": "APP.ACTIONS.DOWNLOAD",
         "icon": "get_app",
         "actions": {
           "click": "DOWNLOAD_NODES"
         },
         "rules": {
-          "visible": "app.selection.canDownload"
+          "visible": "app.navigation.isSearchResults"
         }
       },
       {

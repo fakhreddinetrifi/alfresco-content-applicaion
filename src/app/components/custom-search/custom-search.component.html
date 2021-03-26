@@ -10,26 +10,31 @@
           <mat-card-title>Standard Type</mat-card-title>
             <mat-form-field class="form-field" appearance="legacy">
               <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.NAME' | translate }}</mat-label>
-              <input placeholder="Ex. MyBank" matInput name="name" formControlName="name">
+              <input placeholder="Ex. MyBank" matInput name="cm:name" formControlName="cm:name">
             </mat-form-field>
 
             <mat-form-field class="form-field" appearance="legacy">
               <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.TITLE' | translate }}</mat-label>
-              <input matInput placeholder="Ex. title" name="title" formControlName="title">
+              <input matInput placeholder="Ex. title" name="cm:title" formControlName="cm:title">
 
             </mat-form-field>
             <mat-form-field class="form-field" appearance="legacy">
               <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.AUTHOR' | translate }}</mat-label>
-              <input matInput placeholder="Ex. title" name="author" formControlName="author">
+              <input matInput placeholder="Ex. title" name="cm:author" formControlName="cm:author">
+
+            </mat-form-field>
+            <mat-form-field class="form-field" appearance="legacy">
+              <mat-label>Creator</mat-label>
+              <input matInput placeholder="Ex. title" name="cm:creator" formControlName="cm:creator">
 
             </mat-form-field>
             <mat-form-field class="form-field" appearance="legacy">
               <mat-label>{{ 'APP.DOCUMENT_LIST.CUSTOM_SEARCH.TAG' | translate }}</mat-label>
-              <input matInput placeholder="Ex. Tag" name="tag" formControlName="tag">
+              <input matInput placeholder="Ex. Tag" name="TAG" formControlName="TAG">
             </mat-form-field>
             <mat-form-field class="form-field" appearance="legacy">
               <mat-label>{{ 'APP.DOCUMENT_LIST.COLUMNS.DESCRIPTION' | translate }}</mat-label>
-              <textarea matInput placeholder="Ex. It makes me feel..." name="description" formControlName="description"></textarea>
+              <textarea matInput placeholder="Ex. It makes me feel..." name="cm:description" formControlName="cm:description"></textarea>
 
             </mat-form-field>
             <mat-label class="label">{{ 'APP.DOCUMENT_LIST.COLUMNS.MODIFIED_ON' | translate }}</mat-label>
