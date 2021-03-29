@@ -38,7 +38,13 @@ import { DocumentListPresetRef } from '@alfresco/adf-extensions';
 import { ZoubliService } from 'src/app/zoubli.service';
 import * as jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { DatePipe } from '@angular/common';
+// import * as XLSX from 'xlsx';
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 require('jspdf-autotable');
+require('exceljs');
+
 // import autoTable from 'jspdf-autotable';
 // import html2canvas from 'html2canvas';
 @Component({
@@ -48,6 +54,7 @@ require('jspdf-autotable');
 })
 export class SearchResultsComponent extends PageComponent implements OnInit {
   constructor(
+    private datePipe: DatePipe,
     private queryBuilder: SearchQueryBuilderService,
     private route: ActivatedRoute,
     private config: AppConfigService,
@@ -95,15 +102,13 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
           this.isLoading = true;
         }
       }),
-        this.queryBuilder.executed.subscribe((data) => {
-          this.queryBuilder.paging.skipCount = 0;
-          data.list.entries.forEach(value => console.log(value.entry.properties))
-          // this.queryBuilder.paging.maxItems=this.data.list.pagination.totalItems;
-          // console.log(data);
-          data.list.entries.forEach(value => console.log(value.entry.createdByUser))
-          this.onSearchResultLoaded(data);
-          this.isLoading = false;
-        }),
+      this.queryBuilder.executed.subscribe((data) => {
+        this.queryBuilder.paging.skipCount = 0;
+        // this.queryBuilder.paging.maxItems=this.data.list.pagination.totalItems;
+        // console.log(data);
+        this.onSearchResultLoaded(data);
+        this.isLoading = false;
+      }),
 
       this.queryBuilder.error.subscribe((err: any) => {
         this.onSearchError(err);
@@ -155,7 +160,6 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
         }
         console.log(query);
         if (query) {
-          console.log(decodeURIComponent(query))
           this.queryBuilder.userQuery = decodeURIComponent(query);
           this.queryBuilder.update();
         } else {
@@ -318,11 +322,17 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       if (content.entry.isFile === true) {
         return content.entry.content.mimeTypeName;
       } else {
-        return 'Folder type';
+        return '';
       }
     });
-    const Relevance = this.data.list.entries.map((content) => content.entry.search.score);
-    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt);
+    const Relevance = this.data.list.entries.map((content) => {
+      if (content.entry.search.score == null) {
+        return 0;
+      } else {
+        return content.entry.search.score;
+      }
+    });
+    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt.toString().substring(0, 25));
     const CreatedBy = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
     const Name = this.data.list.entries.map((object) => object.entry.name);
     const ModifiedBy = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
@@ -334,37 +344,15 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       if (object.entry.isFolder === true) {
         return '';
       } else {
-        if (object.entry.path.elements[1] === undefined) {
-          return 'no location available';
-        } else if (object.entry.path.elements[2] === undefined) {
-          return object.entry.path.elements[1].name;
-        } else if (object.entry.path.elements[3] === undefined) {
-          return object.entry.path.elements[2].name;
-        } else if (object.entry.path.elements[4] === undefined) {
-          return object.entry.path.elements[3].name;
-        } else if (object.entry.path.elements[5] === undefined) {
-          return object.entry.path.elements[4].name;
-        } else return object.entry.path.elements[4].name;
+        return object.entry.path.name;
       }
     });
     const Size = this.data.list.entries.map((object) => {
       let i;
       if (object.entry.isFile === true) {
-        // if (object.entry.content.sizeInBytes >= 1073741824) {
-        //   i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
-        // }
-        // else
-        //   if (object.entry.content.sizeInBytes >= 1048576) {
-        i = (object.entry.content.sizeInBytes / 1048576).toFixed(3) + ' MB';
-        // }
-        // else if (object.entry.content.sizeInBytes >= 1024) {
-        //   i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
-        // } else if (object.entry.content.sizeInBytes > 1) {
-        //   i = object.entry.content.sizeInBytes + ' bytes';
-        // } else if (object.entry.content.sizeInBytes == 1) {
-        //   i = object.entry.content.sizeInBytes + ' byte';
+        i = (object.entry.content.sizeInBytes / 1048576).toFixed(3);
       } else {
-        i = 'Folder Has no size';
+        i = '';
       }
       return i;
     });
@@ -381,44 +369,83 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       FileName: s,
       Relevance: Relevance[i],
       Title: Title[i],
-      CreatedDate: CreatedAt[i],
+      CreatedDate: this.datePipe.transform(CreatedAt[i], 'MM/d/y h:mm:ss'),
       Creator: CreatedBy[i],
       Modifier: ModifiedBy[i],
-      ModifiedDate: ModifiedAt[i],
+      ModifiedDate: this.datePipe.transform(ModifiedAt[i], 'MM/d/y h:mm:ss'),
       FileType: FileType[i],
-      Size: Size[i],
+      SizeInMb: Number(Size[i]),
       Location: Path[i]
     }));
-    console.log(output);
-    const csvData = this.ConvertToCSV(output, [
-      'Relevance',
-      'FileName',
-      'Title',
-      'ModifiedDate',
-      'Modifier',
-      'Creator',
-      'CreatedDate',
-      'Size',
-      'FileType',
-      'Location'
-    ]);
-    const blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
-    const dwldLink = document.createElement('a');
-    const url = URL.createObjectURL(blob);
+    console.log(CreatedAt);
+    // const csvData = this.ConvertToCSV(output, [
+    //   'Relevance',
+    //   'FileName',
+    //   'Title',
+    //   'ModifiedDate',
+    //   'Modifier',
+    //   'Creator',
+    //   'CreatedDate',
+    //   'SizeInMb',
+    //   'FileType',
+    //   'Location'
+    // ]);
+    //
+    const header = ['Relevance', 'FileName', 'Title', 'ModifiedDate', 'Modifier', 'Creator', 'CreatedDate', 'SizeInMb', 'FileType', 'Location'];
+    const data = output;
+    //Create workbook and worksheet
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('excelFileName');
+    //Add Header Row
+    const headerRow = worksheet.addRow(header);
+    // Cell Style : Fill and Border
+    headerRow.eachCell((cell) => {
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+      cell.font = { name: 'Arial', family: 4, size: 15, bold: true, strike: false };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+    // Add Data and Conditional Formatting
+    data.forEach((element) => {
+      const eachRow = [];
+      header.forEach((headers) => {
+        eachRow.push(element[headers]);
+      });
 
-    const isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
-    if (isSafariBrowser) {
-      //if Safari open in new window to save file with random filename.
-      dwldLink.setAttribute('target', '_blank');
-    }
-    dwldLink.setAttribute('href', url);
-    dwldLink.setAttribute('download', 'ZoubliExport' + '.csv');
-    dwldLink.style.visibility = 'hidden';
-    document.body.appendChild(dwldLink);
-    dwldLink.click();
-    document.body.removeChild(dwldLink);
+      worksheet.addRow(eachRow);
+    });
+    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    const EXCEL_EXTENSION = '.xls';
+    worksheet.getColumn(1).width = 15;
+    worksheet.getColumn(2).width = 30;
+    worksheet.getColumn(3).width = 30;
+    worksheet.getColumn(4).width = 20;
+    worksheet.getColumn(5).width = 20;
+    worksheet.getColumn(6).width = 20;
+    worksheet.getColumn(7).width = 20;
+    worksheet.getColumn(8).width = 20;
+    worksheet.getColumn(9).width = 20;
+    worksheet.getColumn(10).width = 75;
+    worksheet.addRow([]);
+    worksheet.eachRow((object) => (object.alignment = { vertical: 'middle', horizontal: 'left' }));
+    worksheet.eachRow((column) => {
+      if (column.hasValues === true) {
+        column.border = {
+          // top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      }
+    });
+
+    //Generate Excel File with given name
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], { type: EXCEL_TYPE });
+      fs.saveAs(blob, 'excelFileName' + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+      //
+    });
   }
-
   ConvertToCSV(objArray, headerList) {
     const array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
     let str = '';
@@ -535,6 +562,12 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
       styles: { fontSize: 6 },
       didDrawCell: (data) => {
         console.log(data.column.index);
+      },
+      didParseCell(data) {
+        if (data.row.index === 0 && data.cell.section === 'head') {
+          data.cell.styles.textColor = [255, 255, 255];
+          data.cell.styles.fillColor = '#FF5783';
+        }
       }
     });
 

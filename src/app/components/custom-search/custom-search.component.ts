@@ -31,6 +31,7 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '@alfresco/aca-shared/store';
 import { AppExtensionService } from '@alfresco/aca-shared';
 import { ContentManagementService } from '../../services/content-management.service';
+import { SearchQueryBuilderService } from '@alfresco/adf-content-services';
 
 @Component({
   selector: 'aca-custom-search',
@@ -39,7 +40,9 @@ import { ContentManagementService } from '../../services/content-management.serv
 })
 export class CustomSearchComponent extends PageComponent implements OnInit {
   contractForm: FormGroup;
+  mimeType: any = [];
   constructor(
+    private queryBuilder: SearchQueryBuilderService,
     private fb: FormBuilder,
     private router: Router,
     store: Store<AppStore>,
@@ -64,14 +67,25 @@ export class CustomSearchComponent extends PageComponent implements OnInit {
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.queryBuilder
+      .search({
+        query: {
+          query: `content.mimetype:"**"`
+        },
+        include: ['properties', 'aspectNames']
+      })
+      .subscribe((data) => {
+        data.list.entries.forEach((value) => {
+          console.log(value.entry.aspectNames);
+        });
+      });
   }
 
   onSearchSubmit() {
-
     let obj = '{';
     Object.entries(this.contractForm.value).filter(([key, value]) => {
       if (value !== '' && value !== null && value !== undefined && key !== 'start' && key !== 'end') {
-        console.log(key)
+        console.log(key);
         obj += '"' + key + '"' + ': ' + '"' + value + '"' + ', ';
       }
     });
@@ -80,7 +94,7 @@ export class CustomSearchComponent extends PageComponent implements OnInit {
       const date2 = (new Date().getTime() - new Date(this.contractForm.value.end).getTime()) / (1000 * 3600 * 24);
       obj += '"cm:modified":"[NOW/DAY-' + Math.round(date1) + 'DAYS TO NOW/DAY+' + Math.round(date2) + 'DAY]", ';
     }
-    console.log(obj)
+    console.log(obj);
     const navigationExtras: NavigationExtras = {
       queryParams: JSON.parse(obj.substring(0, obj.length - 2) + '}')
     };

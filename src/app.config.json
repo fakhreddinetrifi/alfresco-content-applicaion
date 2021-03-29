@@ -31,7 +31,7 @@
   "headerColor": "#ffffff",
   "pagination": {
     "size": 5,
-    "supportedPageSizes": [5, 10, 25]
+    "supportedPageSizes": [5, 10, 25,50,100]
   },
   "files": {
     "excluded": [".DS_Store", "desktop.ini", "Thumbs.db", ".git"],
