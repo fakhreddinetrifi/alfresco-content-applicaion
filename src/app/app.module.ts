@@ -66,7 +66,7 @@ import { SharedFilesComponent } from './components/shared-files/shared-files.com
 import { CreateFromTemplateDialogComponent } from './dialogs/node-template/create-from-template.dialog';
 import { environment } from '../environments/environment';
 
-import { registerLocaleData } from '@angular/common';
+import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeDe from '@angular/common/locales/de';
 import localeIt from '@angular/common/locales/it';
@@ -165,6 +165,7 @@ registerLocaleData(localeSv);
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     { provide: AppConfigService, useClass: DebugAppConfigService },
+    { provide: DatePipe },
     {
       provide: TRANSLATION_PROVIDER,
       multi: true,
