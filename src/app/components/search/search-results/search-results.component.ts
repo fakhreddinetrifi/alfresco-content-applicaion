@@ -36,8 +36,8 @@ import { Observable } from 'rxjs';
 import { AppExtensionService } from '@alfresco/aca-shared';
 import { DocumentListPresetRef } from '@alfresco/adf-extensions';
 import { ZoubliService } from '../../../zoubli.service';
-import * as jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+// import * as jsPDF from 'jspdf';
+// import autoTable from 'jspdf-autotable';
 import { DatePipe } from '@angular/common';
 // import * as XLSX from 'xlsx';
 import * as fs from 'file-saver';
@@ -468,111 +468,111 @@ export class SearchResultsComponent extends PageComponent implements OnInit {
     return str;
   }
 
-  generatePdf() {
-    const FileType = this.data.list.entries.map((content) => {
-      if (content.entry.isFile === true) {
-        return content.entry.content.mimeTypeName;
-      } else {
-        return 'Folder type';
-      }
-    });
-    const Relevance = this.data.list.entries.map((content) => content.entry.search.score);
-    const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt.toString().substring(0, 25));
-    const CreatedBy = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
-    const Name = this.data.list.entries.map((object) => object.entry.name);
-    const ModifiedBy = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
-    const ModifiedAt = this.data.list.entries.map((object) => {
-      return object.entry.modifiedAt.toString().substring(0, 25);
-    });
-    const Path = this.data.list.entries.map((object) => {
-      if (object.entry.isFolder === true) {
-        return '';
-      } else {
-        if (object.entry.path.elements[1] === undefined) {
-          return 'no location available';
-        } else if (object.entry.path.elements[2] === undefined) {
-          return object.entry.path.elements[1].name;
-        } else if (object.entry.path.elements[3] === undefined) {
-          return object.entry.path.elements[2].name;
-        } else if (object.entry.path.elements[4] === undefined) {
-          return object.entry.path.elements[3].name;
-        } else if (object.entry.path.elements[5] === undefined) {
-          return object.entry.path.elements[4].name;
-        } else return object.entry.path.elements[4].name;
-      }
-    });
-    const Size = this.data.list.entries.map((object) => {
-      let i;
-      if (object.entry.isFile === true) {
-        if (object.entry.content.sizeInBytes >= 1073741824) {
-          i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
-        } else if (object.entry.content.sizeInBytes >= 1048576) {
-          i = (object.entry.content.sizeInBytes / 1048576).toFixed(2) + ' MB';
-        } else if (object.entry.content.sizeInBytes >= 1024) {
-          i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
-        } else if (object.entry.content.sizeInBytes > 1) {
-          i = object.entry.content.sizeInBytes + ' bytes';
-        } else if (object.entry.content.sizeInBytes == 1) {
-          i = object.entry.content.sizeInBytes + ' byte';
-        } else {
-          i = '0 bytes';
-        }
-        return i;
-      } else return 'folder has no size';
-    });
-    const Title = this.data.list.entries.map((content) => {
-      // tslint:disable-next-line:prettier
-      if (content.entry.isFile === true){
-        return content.entry.properties['cm:title'];
-      } else {
-        return 'Folder type Has no Title';
-      }
-    });
-    console.log(Title);
-    const output = Name.map((s, i) => ({
-      FileName: s,
-      Relevance: Relevance[i],
-      Title: Title[i],
-      CreatedDate: CreatedAt[i],
-      Creator: CreatedBy[i],
-      Modifier: ModifiedBy[i],
-      ModifiedDate: ModifiedAt[i],
-      FileType: FileType[i],
-      Size: Size[i],
-      Location: Path[i]
-    }));
-    console.log(output);
-    for (let i = 0; i < output.length; i++) {
-      Object.values(output[i]);
-      this.tableData.push(Object.values(output[i]));
-    }
-    console.log(this.tableData);
-    console.log(this.tableData);
-    const pdf = new jsPDF({ orientation: 'landscape', lineHeight: 1 });
-
-    for (let i = 0; i < output.length; i++) {
-      console.log(output[i].Relevance); //use i instead of 0
-    }
-
-    autoTable(pdf, {
-      margin: { top: 8 },
-      head: [['FileName', 'Relevance', 'Title', 'CreatedDate', 'Creator', 'Modifier', 'ModifiedDate', 'FileType', 'Size', 'Location']],
-      body: this.tableData,
-      theme: 'grid',
-      styles: { fontSize: 6 },
-      didDrawCell: (data) => {
-        console.log(data.column.index);
-      },
-      didParseCell(data) {
-        if (data.row.index === 0 && data.cell.section === 'head') {
-          data.cell.styles.textColor = [255, 255, 255];
-          data.cell.styles.fillColor = '#FF5783';
-        }
-      }
-    });
-
-    // Open PDF document in browser's new tab
-    // Download PDF doc
-    pdf.save('ZoubliExport.pdf');
-  }
+  // generatePdf() {
+  //   const FileType = this.data.list.entries.map((content) => {
+  //     if (content.entry.isFile === true) {
+  //       return content.entry.content.mimeTypeName;
+  //     } else {
+  //       return 'Folder type';
+  //     }
+  //   });
+  //   const Relevance = this.data.list.entries.map((content) => content.entry.search.score);
+  //   const CreatedAt = this.data.list.entries.map((content) => content.entry.createdAt.toString().substring(0, 25));
+  //   const CreatedBy = this.data.list.entries.map((object) => object.entry.createdByUser.displayName);
+  //   const Name = this.data.list.entries.map((object) => object.entry.name);
+  //   const ModifiedBy = this.data.list.entries.map((object) => object.entry.modifiedByUser.displayName);
+  //   const ModifiedAt = this.data.list.entries.map((object) => {
+  //     return object.entry.modifiedAt.toString().substring(0, 25);
+  //   });
+  //   const Path = this.data.list.entries.map((object) => {
+  //     if (object.entry.isFolder === true) {
+  //       return '';
+  //     } else {
+  //       if (object.entry.path.elements[1] === undefined) {
+  //         return 'no location available';
+  //       } else if (object.entry.path.elements[2] === undefined) {
+  //         return object.entry.path.elements[1].name;
+  //       } else if (object.entry.path.elements[3] === undefined) {
+  //         return object.entry.path.elements[2].name;
+  //       } else if (object.entry.path.elements[4] === undefined) {
+  //         return object.entry.path.elements[3].name;
+  //       } else if (object.entry.path.elements[5] === undefined) {
+  //         return object.entry.path.elements[4].name;
+  //       } else return object.entry.path.elements[4].name;
+  //     }
+  //   });
+  //   const Size = this.data.list.entries.map((object) => {
+  //     let i;
+  //     if (object.entry.isFile === true) {
+  //       if (object.entry.content.sizeInBytes >= 1073741824) {
+  //         i = (object.entry.content.sizeInBytes / 1073741824).toFixed(2) + ' GB';
+  //       } else if (object.entry.content.sizeInBytes >= 1048576) {
+  //         i = (object.entry.content.sizeInBytes / 1048576).toFixed(2) + ' MB';
+  //       } else if (object.entry.content.sizeInBytes >= 1024) {
+  //         i = (object.entry.content.sizeInBytes / 1024).toFixed(2) + ' KB';
+  //       } else if (object.entry.content.sizeInBytes > 1) {
+  //         i = object.entry.content.sizeInBytes + ' bytes';
+  //       } else if (object.entry.content.sizeInBytes == 1) {
+  //         i = object.entry.content.sizeInBytes + ' byte';
+  //       } else {
+  //         i = '0 bytes';
+  //       }
+  //       return i;
+  //     } else return 'folder has no size';
+  //   });
+  //   const Title = this.data.list.entries.map((content) => {
+  //     // tslint:disable-next-line:prettier
+  //     if (content.entry.isFile === true){
+  //       return content.entry.properties['cm:title'];
+  //     } else {
+  //       return 'Folder type Has no Title';
+  //     }
+  //   });
+  //   console.log(Title);
+  //   const output = Name.map((s, i) => ({
+  //     FileName: s,
+  //     Relevance: Relevance[i],
+  //     Title: Title[i],
+  //     CreatedDate: CreatedAt[i],
+  //     Creator: CreatedBy[i],
+  //     Modifier: ModifiedBy[i],
+  //     ModifiedDate: ModifiedAt[i],
+  //     FileType: FileType[i],
+  //     Size: Size[i],
+  //     Location: Path[i]
+  //   }));
+  //   console.log(output);
+  //   for (let i = 0; i < output.length; i++) {
+  //     Object.values(output[i]);
+  //     this.tableData.push(Object.values(output[i]));
+  //   }
+  //   console.log(this.tableData);
+  //   console.log(this.tableData);
+  //   const pdf = new jsPDF({ orientation: 'landscape', lineHeight: 1 });
+  //
+  //   for (let i = 0; i < output.length; i++) {
+  //     console.log(output[i].Relevance); //use i instead of 0
+  //   }
+  //
+  //   autoTable(pdf, {
+  //     margin: { top: 8 },
+  //     head: [['FileName', 'Relevance', 'Title', 'CreatedDate', 'Creator', 'Modifier', 'ModifiedDate', 'FileType', 'Size', 'Location']],
+  //     body: this.tableData,
+  //     theme: 'grid',
+  //     styles: { fontSize: 6 },
+  //     didDrawCell: (data) => {
+  //       console.log(data.column.index);
+  //     },
+  //     didParseCell(data) {
+  //       if (data.row.index === 0 && data.cell.section === 'head') {
+  //         data.cell.styles.textColor = [255, 255, 255];
+  //         data.cell.styles.fillColor = '#FF5783';
+  //       }
+  //     }
+  //   });
+  //
+  //   // Open PDF document in browser's new tab
+  //   // Download PDF doc
+  //   pdf.save('ZoubliExport.pdf');
+  // }
 }
