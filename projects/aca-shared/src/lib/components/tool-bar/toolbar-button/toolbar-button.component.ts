@@ -26,7 +26,7 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ContentActionRef } from '@alfresco/adf-extensions';
 import { AppExtensionService } from '../../../services/app.extension.service';
-import { ZoubliService } from 'src/app/zoubli.service';
+import { ZoubliService } from '../../../../../../../src/app/zoubli.service';
 
 export enum ToolbarButtonType {
   ICON_BUTTON = 'icon-button',

@@ -20,7 +20,7 @@
   },
   "locale": "en",
   "application": {
-    "name": "Alfresco Content Application",
+    "name": "Alfresco Digital Workspace",
     "version": "2.3.0",
     "logo": "assets/images/alfresco-logo-flower.svg",
     "headerImagePath": "assets/images/mastHead-bg-shapesPattern.svg",
