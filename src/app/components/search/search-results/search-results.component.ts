@@ -35,7 +35,7 @@ import { AppConfigService, TranslationService } from '@alfresco/adf-core';
 import { Observable } from 'rxjs';
 import { AppExtensionService } from '@alfresco/aca-shared';
 import { DocumentListPresetRef } from '@alfresco/adf-extensions';
-import { ZoubliService } from 'src/app/zoubli.service';
+import { ZoubliService } from '../../../zoubli.service';
 import * as jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DatePipe } from '@angular/common';
